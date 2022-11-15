@@ -12,7 +12,7 @@ val V = new {
   val sqlite     = "3.39.3.0"
   val zio        = "2.0.2"
   val zioConfig  = "3.0.2"
-  val zioHttp    = "0.0.1+0-0d0f2c07+20221113-0052-SNAPSHOT"
+  val zioHttp    = "0.0.1+1-6229ad80-SNAPSHOT"
   val zioJson    = "0.3.0"
   val zioNio     = "2.0.0"
   val zioProcess = "0.7.1"
@@ -27,7 +27,6 @@ lazy val server = project
       "dev.zio"       %% "zio-config-magnolia" % V.zioConfig,
       "dev.zio"       %% "zio-config-typesafe" % V.zioConfig,
       "dev.zio"       %% "zio-http"            % V.zioHttp,
-      "dev.zio"       %% "zio-http-logging"    % V.zioHttp,
       "dev.zio"       %% "zio-json"            % V.zioJson,
       "dev.zio"       %% "zio-nio"             % V.zioNio,
       "dev.zio"       %% "zio-process"         % V.zioProcess,
@@ -35,6 +34,7 @@ lazy val server = project
       "org.xerial"     % "sqlite-jdbc"         % V.sqlite,
     ),
     addCompilerPlugin("com.olegpy" %% "better-monadic-for" % "0.3.1"),
+    resolvers ++= Resolver.sonatypeOssRepos("snapshots"),
   )
 
 lazy val root = (project in file(".")).aggregate(server)
