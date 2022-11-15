@@ -1,13 +1,33 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
-import { TopLevelApp } from "./App";
+import { createBrowserRouter, RouterProvider, useNavigate } from "react-router-dom";
+import { App } from "./App";
+import { Lorem } from "./pages/Lorem";
+import { Search } from "./pages/Search";
 import reportWebVitals from "./reportWebVitals";
+
+const Redirect = () => {
+  const nav = useNavigate();
+  useEffect(() => nav("/sd", { replace: true }), [nav]);
+  return <></>;
+};
+const router = createBrowserRouter([
+  { path: "/", element: <App />, children: [{ index: true, element: <Redirect /> }] },
+  {
+    path: "/sd",
+    element: <App />,
+    children: [
+      { index: true, element: <Search /> },
+      { path: "lorem", element: <Lorem /> },
+    ],
+  },
+]);
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 root.render(
   <React.StrictMode>
-    <TopLevelApp />
+    <RouterProvider router={router} />
   </React.StrictMode>,
 );
 
