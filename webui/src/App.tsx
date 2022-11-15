@@ -15,20 +15,16 @@ const Loading = () => (
   </Container>
 );
 
-type Props = Readonly<{ loggedIn?: boolean }>;
-
-export const App: FC<Props> = props => (
-  <ThemeProvider theme={theme}>
-    <div>{props.loggedIn === undefined ? <Loading /> : props.loggedIn ? <MainPage /> : <Login />}</div>
-  </ThemeProvider>
-);
-
-export const TopLevelApp = () => {
+export const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>();
 
   useEffect(() => {
     checkIsLoggedIn().then(li => setIsLoggedIn(li.loggedIn));
   }, []);
 
-  return <App loggedIn={isLoggedIn} />;
+  return (
+    <ThemeProvider theme={theme}>
+      <div>{isLoggedIn === undefined ? <Loading /> : isLoggedIn ? <MainPage /> : <Login />}</div>
+    </ThemeProvider>
+  );
 };
