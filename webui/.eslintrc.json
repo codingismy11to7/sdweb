@@ -1,0 +1,241 @@
+{
+  "root": true,
+  "env": {
+    "browser": true,
+    "es6": true,
+    "node": true
+  },
+  "extends": [
+    "plugin:@typescript-eslint/recommended",
+    "plugin:@typescript-eslint/recommended-requiring-type-checking",
+    "plugin:import/typescript",
+    "prettier",
+    "react-app"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "tsconfigRootDir": ".",
+    "project": [
+      "./tsconfig.eslint.json",
+      "./packages/3rdparty/*/tsconfig.eslint.json",
+      "./packages/*/tsconfig.eslint.json"
+    ],
+    "sourceType": "module"
+  },
+  "plugins": [
+    "@typescript-eslint",
+    "import",
+    "prefer-arrow",
+    "prettier"
+  ],
+  "settings": {
+    "react": {
+      "version": "18.2.0"
+    }
+  },
+  "reportUnusedDisableDirectives": true,
+  "rules": {
+    "@typescript-eslint/adjacent-overload-signatures": "error",
+    "@typescript-eslint/array-type": [
+      "warn",
+      {
+        "default": "array-simple"
+      }
+    ],
+    "@typescript-eslint/ban-ts-comment": "off",
+    "@typescript-eslint/ban-types": [
+      "error",
+      {
+        "types": {
+          "Object": {
+            "message": "Avoid using the `Object` type. Did you mean `object`?"
+          },
+          "Function": {
+            "message": "Avoid using the `Function` type. Prefer a specific function type, like `() => void`."
+          },
+          "Boolean": {
+            "message": "Avoid using the `Boolean` type. Did you mean `boolean`?"
+          },
+          "Number": {
+            "message": "Avoid using the `Number` type. Did you mean `number`?"
+          },
+          "String": {
+            "message": "Avoid using the `String` type. Did you mean `string`?"
+          },
+          "Symbol": {
+            "message": "Avoid using the `Symbol` type. Did you mean `symbol`?"
+          }
+        }
+      }
+    ],
+    "@typescript-eslint/consistent-type-assertions": "error",
+    "@typescript-eslint/consistent-type-definitions": "error",
+    "@typescript-eslint/dot-notation": "error",
+    "@typescript-eslint/explicit-member-accessibility": [
+      "off",
+      {
+        "accessibility": "explicit"
+      }
+    ],
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/indent": "off",
+    "@typescript-eslint/interface-name-prefix": "off",
+    "@typescript-eslint/member-delimiter-style": "off",
+    "@typescript-eslint/member-ordering": "off",
+    "@typescript-eslint/no-empty-function": "off",
+    "@typescript-eslint/no-empty-interface": "error",
+    "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/no-floating-promises": "off",
+    "@typescript-eslint/no-inferrable-types": "off",
+    "@typescript-eslint/no-misused-new": "error",
+    "@typescript-eslint/no-misused-promises": "off",
+    "@typescript-eslint/no-namespace": "error",
+    "@typescript-eslint/no-non-null-assertion": "off",
+    "@typescript-eslint/no-parameter-properties": "off",
+    "@typescript-eslint/no-unnecessary-type-assertion": "warn",
+    "@typescript-eslint/no-unused-expressions": "warn",
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        "args": "all",
+        "argsIgnorePattern": "^_",
+        "ignoreRestSiblings": true
+      }
+    ],
+    "@typescript-eslint/no-unsafe-assignment": "off",
+    "@typescript-eslint/no-unsafe-call": "off",
+    "@typescript-eslint/no-unsafe-member-access": "off",
+    "@typescript-eslint/no-unsafe-return": "off",
+    "@typescript-eslint/no-use-before-define": "off",
+    "@typescript-eslint/no-var-requires": "error",
+    "@typescript-eslint/prefer-for-of": "error",
+    "@typescript-eslint/prefer-function-type": "error",
+    "@typescript-eslint/prefer-namespace-keyword": "error",
+    "@typescript-eslint/prefer-regexp-exec": "off",
+    "@typescript-eslint/quotes": [
+      "warn",
+      "double",
+      {
+        "avoidEscape": true
+      }
+    ],
+    "@typescript-eslint/restrict-template-expressions": "off",
+    "@typescript-eslint/semi": "off",
+    "@typescript-eslint/triple-slash-reference": [
+      "error",
+      {
+        "path": "always",
+        "types": "prefer-import",
+        "lib": "always"
+      }
+    ],
+    "@typescript-eslint/type-annotation-spacing": "warn",
+    "@typescript-eslint/unbound-method": "off",
+    "@typescript-eslint/unified-signatures": "error",
+    "arrow-body-style": "warn",
+    "arrow-parens": "off",
+    "brace-style": "off",
+    "camelcase": "off",
+    "comma-dangle": "off",
+    "complexity": "off",
+    "constructor-super": "error",
+    "curly": "off",
+    "eol-last": "off",
+    "eqeqeq": [
+      "error",
+      "smart"
+    ],
+    "guard-for-in": "error",
+    "id-blacklist": "off",
+    "id-match": "off",
+    "import/no-useless-path-segments": "warn",
+    "import/order": [
+      "warn",
+      {
+        "alphabetize": {
+          "order": "asc",
+          "caseInsensitive": true
+        },
+        "groups": [
+          [
+            "builtin",
+            "external"
+          ],
+          [
+            "sibling",
+            "parent",
+            "internal"
+          ]
+        ]
+      }
+    ],
+    "max-classes-per-file": "off",
+    "max-len": "off",
+    "new-parens": "off",
+    "no-bitwise": "error",
+    "no-caller": "error",
+    "no-cond-assign": "error",
+    "no-console": "off",
+    "no-debugger": "error",
+    "no-empty": "warn",
+    "no-eval": "error",
+    "no-fallthrough": "warn",
+    "no-invalid-this": "off",
+    "no-multiple-empty-lines": "off",
+    "no-new-wrappers": "error",
+    "no-shadow": [
+      "off",
+      {
+        "hoist": "all"
+      }
+    ],
+    "no-throw-literal": "error",
+    "no-trailing-spaces": "off",
+    "no-undef-init": "error",
+    "no-underscore-dangle": "off",
+    "no-unsafe-finally": "error",
+    "no-unused-labels": "error",
+    "no-var": "error",
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": [
+          "@material-ui/*/*/*",
+          "!@material-ui/core/test-utils/*"
+        ]
+      }
+    ],
+    "object-shorthand": "warn",
+    "one-var": [
+      "error",
+      "never"
+    ],
+    "prefer-arrow/prefer-arrow-functions": [
+      "error",
+      {
+        "allowStandaloneDeclarations": true
+      }
+    ],
+    "prefer-const": "error",
+    "prettier/prettier": "warn",
+    "quote-props": "off",
+    "radix": "error",
+    "react/self-closing-comp": [
+      "warn",
+      {
+        "component": true,
+        "html": true
+      }
+    ],
+    "react-hooks/exhaustive-deps": [
+      "warn",
+      {
+        "enableDangerousAutofixThisMayCauseInfiniteLoops": true
+      }
+    ],
+    "space-before-function-paren": "off",
+    "spaced-comment": "off",
+    "use-isnan": "error",
+    "valid-typeof": "warn"
+  }
+}
