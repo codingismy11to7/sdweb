@@ -107,7 +107,6 @@ final case class Router(
         val imgs = fileUtil.images(id)
         ZIO.fromOption(imgs.images.lift(idx)).orElseFail(HttpError.NotFound(r.path.encode)).flatMap(sendImage(r))
 
-      case Method.GET -> `base`      => sendIndex
       case Method.GET -> `base` / "" => sendIndex
 
       case Method.GET -> path if path.startsWith(base) =>
@@ -125,14 +124,19 @@ final case class Router(
               Option(java.nio.file.Files.probeContentType(file.toPath)),
             ).toOption.flatten
               .fold(headers)(headers.withContentType(_))
-          Files.exists(zio.nio.file.Path.fromJava(file.toPath)).flatMap { exists =>
-            if (exists)
-              ZIO succeed Response(
-                headers = addContentType(Headers.empty),
-                body = Body.fromStream(ZStream.fromFile(file)),
-              )
-            else ZIO.debug(s"non existing file? $file") as Response.status(Status.NotFound)
-          }
+
+          for {
+            f      <- ZIO succeed zio.nio.file.Path.fromJava(file.toPath)
+            exists <- Files.exists(f)
+            isDir  <- Files.isDirectory(f)
+            res <-
+              if (exists && !isDir)
+                ZIO succeed Response(
+                  headers = addContentType(Headers.empty),
+                  body = Body.fromStream(ZStream.fromFile(file)),
+                )
+              else sendIndex
+          } yield res
         }
 
     }
