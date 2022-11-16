@@ -1,8 +1,10 @@
 import ApiIcon from "@mui/icons-material/Api";
+import GitHubIcon from "@mui/icons-material/GitHub";
 import InboxIcon from "@mui/icons-material/Inbox";
 import MailIcon from "@mui/icons-material/Mail";
 import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
+import { Tooltip } from "@mui/material";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -46,6 +48,8 @@ export const MainPage = () => {
     </ListItem>
   );
 
+  const loadGithub = () => window.open("https://github.com/codingismy11to7/sdweb", "_blank");
+
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
@@ -57,6 +61,11 @@ export const MainPage = () => {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             Stable Diffusion
           </Typography>
+          <Tooltip title="GitHub Repository">
+            <IconButton color="inherit" onClick={loadGithub}>
+              <GitHubIcon />
+            </IconButton>
+          </Tooltip>
           <Button color="inherit" onClick={() => document.location.assign(`${BackendUrl}/logout`)}>
             Logout
           </Button>
