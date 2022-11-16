@@ -1,3 +1,4 @@
+import ApiIcon from "@mui/icons-material/Api";
 import InboxIcon from "@mui/icons-material/Inbox";
 import MailIcon from "@mui/icons-material/Mail";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -74,6 +75,7 @@ export const MainPage = () => {
         <Box sx={{ overflow: "auto" }}>
           <List>
             {navItem("Search", "/", <SearchIcon />)}
+            {navItem("API", "api", <ApiIcon />)}
             {navItem("Lorem", "lorem", <MailIcon />)}
           </List>
           <Divider />

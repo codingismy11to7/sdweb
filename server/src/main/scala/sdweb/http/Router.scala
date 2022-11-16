@@ -93,7 +93,7 @@ final case class Router(
           } yield HttpModel.ResetApiKeyResponse(newKey)
         }
 
-      case r @ Method.POST -> `base` / "generate" =>
+      case r @ Method.POST -> `base` / "api" / "generate" =>
         validateAuth(r) *> r.handle { (g: HttpModel.Generate) =>
           for {
             _   <- ZIO.debug(s"generate request for ${g.prompt}")

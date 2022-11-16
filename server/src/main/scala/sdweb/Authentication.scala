@@ -15,5 +15,5 @@ final case class Authentication(users: Users, apiKeys: ApiKeys, hasher: Hasher) 
 }
 
 object Authentication {
-  val live: URLayer[Users with ApiKeys with Hasher, Authentication] = ZLayer.fromFunction(Authentication.apply _)
+  val live: URLayer[Users with ApiKeys with Hasher, Authentication] = ZLayer.fromFunction(apply _)
 }
