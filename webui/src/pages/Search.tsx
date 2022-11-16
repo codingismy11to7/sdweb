@@ -14,7 +14,7 @@ export const Search = () => {
 
   const doSearch = useCallback((searchText: string) => {
     setGenerating(true);
-    fetch(`${BackendUrl}/generate`, {
+    fetch(`${BackendUrl}/api/generate`, {
       method: "POST",
       body: JSON.stringify({ prompt: searchText }),
       credentials: "include",
@@ -27,10 +27,7 @@ export const Search = () => {
 
   return (
     <>
-      <Backdrop
-        sx={{ color: theme => theme.palette.text.primary, zIndex: theme => theme.zIndex.drawer + 1 }}
-        open={generating}
-      >
+      <Backdrop sx={{ color: "text.primary", zIndex: theme => theme.zIndex.drawer + 1 }} open={generating}>
         <CircularProgress color="inherit" />
       </Backdrop>
       <TextField label="Description of image" value={searchText} onChange={e => setSearchText(e.target.value)} />

@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import { createBrowserRouter, RouterProvider, useNavigate } from "react-router-dom";
 import { App } from "./App";
+import { Api } from "./pages/Api";
 import { Lorem } from "./pages/Lorem";
 import { Search } from "./pages/Search";
 import reportWebVitals from "./reportWebVitals";
@@ -19,6 +20,7 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       { index: true, element: <Search /> },
+      { path: "api", element: <Api /> },
       { path: "lorem", element: <Lorem /> },
     ],
   },
