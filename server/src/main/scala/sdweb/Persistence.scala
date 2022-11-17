@@ -29,7 +29,8 @@ final case class Users(quill: Quill.Sqlite[SnakeCase]) {
   import quill._
 
   def save(username: String, hashedPw: String): IO[SQLException, Long] =
-    run(query[User].insertValue(lift(User(username, hashedPw))))
+    run(query[User].insertValue(lift(User(username, hashedPw)))
+      .onConflictUpdate(_.username)((t,_) => t.passwordHash -> lift(hashedPw)))
 
   def isValid(username: String, hashedPw: String): IO[SQLException, Boolean] =
     run(query[User].filter(u => u.username == lift(username) && u.passwordHash == lift(hashedPw))).map(_.nonEmpty)
