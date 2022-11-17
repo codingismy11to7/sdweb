@@ -1,6 +1,7 @@
 import ApiIcon from "@mui/icons-material/Api";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import InboxIcon from "@mui/icons-material/Inbox";
+import KeyIcon from "@mui/icons-material/Key";
 import MailIcon from "@mui/icons-material/Mail";
 import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
@@ -86,6 +87,7 @@ export const MainPage = () => {
             {navItem("Search", "/", <SearchIcon />)}
             {navItem("API", "api", <ApiIcon />)}
             {navItem("Lorem", "lorem", <MailIcon />)}
+            {navItem("Change Password", "chgpass", <KeyIcon />)}
           </List>
           <Divider />
           <List>

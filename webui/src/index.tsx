@@ -7,6 +7,7 @@ import { Api } from "./pages/Api";
 import { Lorem } from "./pages/Lorem";
 import { Search } from "./pages/Search";
 import reportWebVitals from "./reportWebVitals";
+import ChangePassword from "./pages/ChangePassword";
 
 const Redirect = () => {
   const nav = useNavigate();
@@ -22,6 +23,7 @@ const router = createBrowserRouter([
       { index: true, element: <Search /> },
       { path: "api", element: <Api /> },
       { path: "lorem", element: <Lorem /> },
+      { path: "chgpass", element: <ChangePassword /> },
     ],
   },
 ]);

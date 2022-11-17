@@ -29,16 +29,20 @@ final case class Router(
       case UuidStr(sessId) => sessId
     }
 
-  private def hasValidSessionId(r: Request) = getSessionId(r) match {
-    case Some(sId) => sessionManager.isValidSession(sId)
-    case None      => ZIO.succeed(false)
+  private def userForSessionId(r: Request) = getSessionId(r) match {
+    case Some(sId) => sessionManager.userForSession(sId)
+    case None      => ZIO.succeed(None)
+  }
+
+  private def hasValidSessionId(r: Request) = userForSessionId(r).map(_.isDefined)
+
+  private def currentUser(r: Request) = r.headerValue(AuthHeader) match {
+    case Some(token) => auth.userFor(token)
+    case None        => userForSessionId(r)
   }
 
   private def validateAuth(r: Request) =
-    r.headerValue(AuthHeader) match {
-      case None        => ZIO.fail(HttpError.Unauthorized()).unlessZIO(hasValidSessionId(r))
-      case Some(token) => ZIO.fail(HttpError.Unauthorized()).unlessZIO(auth.isValidApiKey(token))
-    }
+    ZIO.fail(HttpError.Unauthorized()).unlessZIO(currentUser(r).map(_.isDefined))
 
   private def sendImage(r: Request)(file: File) =
     for {
@@ -139,6 +143,21 @@ final case class Router(
           } yield res
         }
 
+      case r @ Method.POST -> `base` / "api" / "changepw" =>
+        validateAuth(r) *> r.handle { (chg: HttpModel.ChangePass) =>
+          currentUser(r) flatMap {
+            case Some(username) =>
+              for {
+                passok <- auth.isValidUserPass(username, chg.currentpass)
+                update <- auth.updateUserPass(username, chg.newpass).when(passok)
+              } yield HttpModel.ChangePassResponse(if (update.nonEmpty) None else Some("Update failed"))
+
+            case None =>
+              for {
+                _ <- ZIO.debug(s"no user found")
+              } yield HttpModel.ChangePassResponse(Some("user not found"))
+          }
+        }
     }
     .catchSome { case e: HttpError => Http succeed Response.fromHttpError(e) } @@ Middleware.cors()
 }

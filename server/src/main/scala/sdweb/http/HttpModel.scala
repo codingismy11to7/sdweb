@@ -17,4 +17,9 @@ object HttpModel {
   object Generate { implicit val codec: JsonCodec[Generate] = DeriveJsonCodec.gen[Generate] }
   final case class GenerateResponse(imageId: UUID)
   object GenerateResponse { implicit val codec: JsonCodec[GenerateResponse] = DeriveJsonCodec.gen[GenerateResponse] }
+
+  final case class ChangePass(currentpass: String, newpass: String)
+  object ChangePass { implicit val codec: JsonCodec[ChangePass] = DeriveJsonCodec.gen[ChangePass]}
+  final case class ChangePassResponse(error: Option[String])
+  object ChangePassResponse { implicit val codec: JsonCodec[ChangePassResponse] = DeriveJsonCodec.gen[ChangePassResponse]}
 }
