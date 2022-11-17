@@ -1,78 +1,65 @@
-import { useTheme } from "@mui/material/styles";
-import Container from "@mui/material/Container";
-import { useCallback, useState } from "react";
-import { BackendUrl } from "../consts";
+import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
+import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
-
-interface ChangePassResponse {
-  error: string;
-}
+import { useCallback, useState } from "react";
+import { sendChangePasswordRequest } from "../backend";
 
 const ChangePassword = () => {
-  const theme = useTheme();
-  const [currPass, setCurrPass] = useState("");
-  const [newPass, setNewPass] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
   const [confirmPass, setConfirmPass] = useState("");
   const [passError, setPassError] = useState("");
 
-  const enabled = !!newPass.length && !!confirmPass.length && newPass === confirmPass;
+  const enabled = !!newPassword.length && !!confirmPass.length && newPassword === confirmPass;
 
   const doChange = useCallback(() => {
-    setCurrPass("")
-    setNewPass("")
-    setConfirmPass("")
-    setPassError("")
+    setCurrentPassword("");
+    setNewPassword("");
+    setConfirmPass("");
+    setPassError("");
     if (enabled) {
-      fetch(`${BackendUrl}/api/changepw`, {
-        method: "POST",
-        body: JSON.stringify({ currentpass: currPass, newpass: newPass }),
-        credentials: "include",
-      })
-        .then(res => res.json())
-        .then((res: ChangePassResponse) => {
-          if (res.error) setPassError(res.error)
-        })
+      sendChangePasswordRequest(
+        { currentPassword, newPassword },
+        res => {
+          if (res.error) setPassError(res.error);
+        },
+        res => setPassError(`Server error: ${res.statusText}`),
+      );
     }
-  }, [enabled, newPass, currPass, passError]);
+  }, [enabled, currentPassword, newPassword]);
 
   return (
     <Container maxWidth={"sm"}>
-      <Card variant={"outlined"} style={{ padding: theme.spacing() }}>
+      <Card variant={"outlined"} sx={{ p: 1 }}>
         <Grid container spacing={2} direction={"column"}>
           <Grid item>
             <TextField
               autoFocus
               label={"Current Password"}
-              name={"currpassword"}
               type={"password"}
               required
-              value={currPass}
+              value={currentPassword}
               fullWidth
               error={passError.length > 0}
               helperText={passError}
-              onChange={e => setCurrPass(e.target.value)}
+              onChange={e => setCurrentPassword(e.target.value)}
             />
           </Grid>
           <Grid item>
             <TextField
-              autoFocus
               label={"New Password"}
-              name={"newpassword"}
               type={"password"}
               required
-              value={newPass}
+              value={newPassword}
               fullWidth
-              onChange={e => setNewPass(e.target.value)}
+              onChange={e => setNewPassword(e.target.value)}
             />
           </Grid>
           <Grid item>
             <TextField
-              autoFocus
               label={"Confirm Password"}
-              name={"confirmpassword"}
               type={"password"}
               required
               value={confirmPass}

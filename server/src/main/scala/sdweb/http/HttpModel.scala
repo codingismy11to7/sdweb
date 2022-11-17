@@ -18,8 +18,12 @@ object HttpModel {
   final case class GenerateResponse(imageId: UUID)
   object GenerateResponse { implicit val codec: JsonCodec[GenerateResponse] = DeriveJsonCodec.gen[GenerateResponse] }
 
-  final case class ChangePass(currentpass: String, newpass: String)
-  object ChangePass { implicit val codec: JsonCodec[ChangePass] = DeriveJsonCodec.gen[ChangePass]}
-  final case class ChangePassResponse(error: Option[String])
-  object ChangePassResponse { implicit val codec: JsonCodec[ChangePassResponse] = DeriveJsonCodec.gen[ChangePassResponse]}
+  final case class ChangePassword(currentPassword: String, newPassword: String)
+  object ChangePassword { implicit val codec: JsonCodec[ChangePassword] = DeriveJsonCodec.gen[ChangePassword] }
+  final case class ChangePasswordResponse(error: Option[String] = None) {
+    def withError(e: String): ChangePasswordResponse = copy(error = Some(e))
+  }
+  object ChangePasswordResponse {
+    implicit val codec: JsonCodec[ChangePasswordResponse] = DeriveJsonCodec.gen[ChangePasswordResponse]
+  }
 }

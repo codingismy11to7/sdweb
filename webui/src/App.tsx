@@ -3,8 +3,8 @@ import Skeleton from "@mui/material/Skeleton";
 import Container from "@mui/system/Container";
 import ThemeProvider from "@mui/system/ThemeProvider";
 import { useEffect, useState } from "react";
+import { checkIsLoggedIn } from "./backend";
 import Login from "./Login";
-import { checkIsLoggedIn } from "./loginChecker";
 import { MainPage } from "./MainPage";
 
 const theme = createTheme();

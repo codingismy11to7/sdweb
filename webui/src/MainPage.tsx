@@ -1,14 +1,12 @@
 import ApiIcon from "@mui/icons-material/Api";
 import GitHubIcon from "@mui/icons-material/GitHub";
-import InboxIcon from "@mui/icons-material/Inbox";
 import KeyIcon from "@mui/icons-material/Key";
-import MailIcon from "@mui/icons-material/Mail";
+import LogoutIcon from "@mui/icons-material/Logout";
 import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
 import { Tooltip } from "@mui/material";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import Divider from "@mui/material/Divider";
 import Drawer from "@mui/material/Drawer";
@@ -40,14 +38,16 @@ export const MainPage = () => {
     [nav],
   );
 
-  const navItem = (label: string, navTo: string, icon: ReactNode) => (
-    <ListItem key={label} disablePadding onClick={() => navigate(navTo)}>
+  const menuItem = (label: string, onClick: () => void, icon: ReactNode) => (
+    <ListItem key={label} disablePadding onClick={onClick}>
       <ListItemButton>
         <ListItemIcon>{icon}</ListItemIcon>
         <ListItemText primary={label} />
       </ListItemButton>
     </ListItem>
   );
+
+  const navItem = (label: string, navTo: string, icon: ReactNode) => menuItem(label, () => navigate(navTo), icon);
 
   const loadGithub = () => window.open("https://github.com/codingismy11to7/sdweb", "_blank");
 
@@ -67,9 +67,6 @@ export const MainPage = () => {
               <GitHubIcon />
             </IconButton>
           </Tooltip>
-          <Button color="inherit" onClick={() => document.location.assign(`${BackendUrl}/logout`)}>
-            Logout
-          </Button>
         </Toolbar>
       </AppBar>
       <Drawer
@@ -86,30 +83,11 @@ export const MainPage = () => {
           <List>
             {navItem("Search", "/", <SearchIcon />)}
             {navItem("API", "api", <ApiIcon />)}
-            {navItem("Lorem", "lorem", <MailIcon />)}
-            {navItem("Change Password", "chgpass", <KeyIcon />)}
           </List>
           <Divider />
           <List>
-            {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
-              <ListItem key={text} disablePadding>
-                <ListItemButton>
-                  <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-                  <ListItemText primary={text} />
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
-          <Divider />
-          <List>
-            {["All mail", "Trash", "Spam"].map((text, index) => (
-              <ListItem key={text} disablePadding>
-                <ListItemButton>
-                  <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-                  <ListItemText primary={text} />
-                </ListItemButton>
-              </ListItem>
-            ))}
+            {navItem("Change Password", "password", <KeyIcon />)}
+            {menuItem("Logout", () => document.location.assign(`${BackendUrl}/logout`), <LogoutIcon />)}
           </List>
         </Box>
       </Drawer>
