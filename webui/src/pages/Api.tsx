@@ -76,6 +76,21 @@ export const Api = () => (
           </CardContent>
         </Card>
       </Grid>
+      <Grid item>
+        <Card>
+          <CardHeader title="Change Password" />
+          <CardContent>
+            <div>Change the current user's password</div>
+          </CardContent>
+          <CardContent>
+            {codeBlock(<>POST: /&lt;base&gt;/api/user/password</>)}
+            {codeBlock(<>Body:</>)}
+            {jsonBlock({ currentPassword: "String", newPassword: "String" })}
+            {codeBlock(<>Response:</>)}
+            {jsonBlock({ error: "optional error message field" })}
+          </CardContent>
+        </Card>
+      </Grid>
     </Grid>
   </>
 );

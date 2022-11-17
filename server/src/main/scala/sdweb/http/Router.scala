@@ -2,6 +2,7 @@ package sdweb
 package http
 
 import play.core.parsers.FormUrlEncodedParser
+import sdweb.Authentication.AuthError
 import sdweb.http.Router.{AuthHeader, CookieSecret, IntPath, RichRequest, SessionCookie, UuidStr}
 import sdweb.{Authentication, Config, FileUtil, RequestProcessor}
 import zio._
@@ -91,10 +92,24 @@ final case class Router(
       case r @ Method.POST -> `base` / "api" / "key" / "reset" =>
         r.handle { (rak: HttpModel.ResetApiKey) =>
           for {
-            isValid <- auth.isValidUserPass(rak.username, rak.password)
+            isValid <- auth.isValidUserPass(rak.username, rak.password).mapError(_.e)
             _       <- ZIO.fail(HttpError.Unauthorized()).unless(isValid)
             newKey  <- auth.createApiKeyFor(rak.username)
           } yield HttpModel.ResetApiKeyResponse(newKey)
+        }
+
+      case r @ Method.POST -> `base` / "api" / "user" / "password" =>
+        r.handle { (chg: HttpModel.ChangePassword) =>
+          currentUser(r) flatMap {
+            case Some(username) =>
+              val resp = HttpModel.ChangePasswordResponse()
+              auth.updatePassword(username, chg.currentPassword, chg.newPassword).as(resp).catchAll {
+                case AuthError.InvalidCredentials(_) => ZIO succeed resp.withError("Incorrect password")
+                case AuthError.DatabaseError(e)      => ZIO fail e
+              }
+
+            case None => ZIO.debug("user not logged in during pw change") *> ZIO.fail(HttpError.Unauthorized())
+          }
         }
 
       case r @ Method.POST -> `base` / "api" / "generate" =>
@@ -143,21 +158,6 @@ final case class Router(
           } yield res
         }
 
-      case r @ Method.POST -> `base` / "api" / "changepw" =>
-        validateAuth(r) *> r.handle { (chg: HttpModel.ChangePass) =>
-          currentUser(r) flatMap {
-            case Some(username) =>
-              for {
-                passok <- auth.isValidUserPass(username, chg.currentpass)
-                update <- auth.updateUserPass(username, chg.newpass).when(passok)
-              } yield HttpModel.ChangePassResponse(if (update.nonEmpty) None else Some("Update failed"))
-
-            case None =>
-              for {
-                _ <- ZIO.debug(s"no user found")
-              } yield HttpModel.ChangePassResponse(Some("user not found"))
-          }
-        }
     }
     .catchSome { case e: HttpError => Http succeed Response.fromHttpError(e) } @@ Middleware.cors()
 }

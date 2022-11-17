@@ -4,10 +4,9 @@ import "./index.css";
 import { createBrowserRouter, RouterProvider, useNavigate } from "react-router-dom";
 import { App } from "./App";
 import { Api } from "./pages/Api";
-import { Lorem } from "./pages/Lorem";
+import ChangePassword from "./pages/ChangePassword";
 import { Search } from "./pages/Search";
 import reportWebVitals from "./reportWebVitals";
-import ChangePassword from "./pages/ChangePassword";
 
 const Redirect = () => {
   const nav = useNavigate();
@@ -22,8 +21,7 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <Search /> },
       { path: "api", element: <Api /> },
-      { path: "lorem", element: <Lorem /> },
-      { path: "chgpass", element: <ChangePassword /> },
+      { path: "password", element: <ChangePassword /> },
     ],
   },
 ]);
