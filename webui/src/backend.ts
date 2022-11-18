@@ -14,6 +14,8 @@ export const checkIsLoggedIn = (): Promise<LoggedIn> => {
   return loop();
 };
 
+export const navigateToLogout = () => document.location.assign(`${BackendUrl}/logout`);
+
 const backendPostRequest = <T, R>(
   suffix: string,
   req: T,

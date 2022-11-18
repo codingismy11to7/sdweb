@@ -20,6 +20,7 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import { ReactNode, useCallback, useState } from "react";
 import { To, NavigateOptions, Outlet, useNavigate } from "react-router-dom";
+import { navigateToLogout } from "./backend";
 import { BackendUrl } from "./consts";
 
 const drawerWidth = 240;
@@ -87,7 +88,7 @@ export const MainPage = () => {
           <Divider />
           <List>
             {navItem("Change Password", "password", <KeyIcon />)}
-            {menuItem("Logout", () => document.location.assign(`${BackendUrl}/logout`), <LogoutIcon />)}
+            {menuItem("Logout", navigateToLogout, <LogoutIcon />)}
           </List>
         </Box>
       </Drawer>
