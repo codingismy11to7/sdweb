@@ -1,13 +1,17 @@
+import { Alert, Snackbar } from "@mui/material";
 import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
-import CloseIcon from "@mui/icons-material/Close";
 import { useCallback, useState } from "react";
-import { sendChangePasswordRequest } from "../backend";
-import { Alert, IconButton, Snackbar } from "@mui/material";
-import { BackendUrl } from "../consts";
+import { navigateToLogout, sendChangePasswordRequest } from "../backend";
+
+const logoutAction = (
+  <Button color="secondary" size="small" onClick={navigateToLogout}>
+    Logout
+  </Button>
+);
 
 const ChangePassword = () => {
   const [currentPassword, setCurrentPassword] = useState("");
@@ -17,22 +21,6 @@ const ChangePassword = () => {
   const [alertOpen, setAlertOpen] = useState(false);
 
   const enabled = !!newPassword.length && !!confirmPass.length && newPassword === confirmPass;
-
-  const logoutAction = (
-    <>
-      <Button color="secondary" size="small" onClick={() => document.location.assign(`${BackendUrl}/logout`)}>
-        LOGOUT
-      </Button>
-      <IconButton
-        size="small"
-        aria-label="close"
-        color="inherit"
-        onClick={() => setAlertOpen(false)}
-      >
-        <CloseIcon fontSize="small" />
-      </IconButton>
-    </>
-  );
 
   const doChange = useCallback(() => {
     setCurrentPassword("");
@@ -44,8 +32,7 @@ const ChangePassword = () => {
         { currentPassword, newPassword },
         res => {
           if (res.error) setPassError(res.error);
-          else
-            setAlertOpen(true);
+          else setAlertOpen(true);
         },
         res => setPassError(`Server error: ${res.statusText}`),
       );
@@ -100,8 +87,11 @@ const ChangePassword = () => {
         open={alertOpen}
         autoHideDuration={6000}
         onClose={() => setAlertOpen(false)}
+        anchorOrigin={{ horizontal: "center", vertical: "bottom" }}
       >
-        <Alert severity="success" action={logoutAction}>Password Changed!</Alert>
+        <Alert severity="success" action={logoutAction}>
+          Password changed successfully
+        </Alert>
       </Snackbar>
     </Container>
   );
