@@ -21,7 +21,6 @@ import Typography from "@mui/material/Typography";
 import { ReactNode, useCallback, useState } from "react";
 import { To, NavigateOptions, Outlet, useNavigate } from "react-router-dom";
 import { navigateToLogout } from "./backend";
-import { BackendUrl } from "./consts";
 
 const drawerWidth = 240;
 
