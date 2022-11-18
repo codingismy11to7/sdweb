@@ -153,7 +153,7 @@ final case class Router(
                 ZIO succeed Response(
                   headers = addContentType(Headers.empty),
                   body = Body.fromStream(ZStream.fromFile(file)),
-                )
+                ).withCacheControlMaxAge(3.days)
               else sendIndex
           } yield res
         }
