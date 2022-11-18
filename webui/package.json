@@ -24,16 +24,14 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
+    "prepare": "cd .. && husky install webui/.husky",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
-  "eslintConfigX": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+  "lint-staged": {
+    "*.{ts,tsx}": "eslint --fix"
   },
   "browserslist": {
     "production": [
@@ -53,6 +51,8 @@
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-prefer-arrow": "^1.2.3",
     "eslint-plugin-prettier": "^4.2.1",
+    "husky": "^8.0.2",
+    "lint-staged": "^13.0.3",
     "prettier": "^2.7.1"
   }
 }
