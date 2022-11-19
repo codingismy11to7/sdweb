@@ -1,12 +1,12 @@
 import React, { useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
+import "react-image-gallery/styles/css/image-gallery.css";
 import { createBrowserRouter, RouterProvider, useNavigate } from "react-router-dom";
 import { App } from "./App";
 import { Api } from "./pages/Api";
 import ChangePassword from "./pages/ChangePassword";
 import { Search } from "./pages/Search";
-import { Search2 } from "./pages/Search2";
 import reportWebVitals from "./reportWebVitals";
 
 const Redirect = () => {
@@ -21,8 +21,8 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       { index: true, element: <Search /> },
-      { path: "search", element: <Search2 /> },
-      { path: "search/:imageId", element: <Search2 /> },
+      { path: "search", element: <Search /> },
+      { path: "search/:imageId", element: <Search /> },
       { path: "api", element: <Api /> },
       { path: "password", element: <ChangePassword /> },
     ],
