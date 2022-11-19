@@ -3,11 +3,13 @@ import { Alert, Fab } from "@mui/material";
 import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
 import TextField from "@mui/material/TextField";
-import { useCallback, useEffect, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { Key } from "ts-key-enum";
 import { fetchRequest, gridImageUrl, imageSearch } from "../backend";
-import ImageViewer from "../components/ImageViewer";
 import { usePrevious } from "../util/hooks";
+
+const ImageViewer = lazy(() => import("../components/ImageViewer"));
 
 const imageList = (imageId: string) =>
   [
@@ -72,8 +74,10 @@ export const Search = () => {
           label="Description of image"
           value={searchText}
           onChange={e => setSearchText(e.target.value)}
-          multiline
-          maxRows={4}
+          onKeyUp={e => {
+            if (e.key === Key.Enter && searchText) doSearch(searchText);
+          }}
+          autoFocus
           style={{ width: 500 }}
         />
         <Fab disabled={!searchText.length} onClick={() => doSearch(searchText)} color={"primary"} style={{ margin: 5 }}>
@@ -88,7 +92,9 @@ export const Search = () => {
         <></>
       )}
       {imageId !== undefined && imageId && notFound !== undefined && !notFound && !generating ? (
-        <ImageViewer searchText={searchText} images={imageList(imageId)} />
+        <Suspense>
+          <ImageViewer images={imageList(imageId)} />
+        </Suspense>
       ) : (
         <></>
       )}
