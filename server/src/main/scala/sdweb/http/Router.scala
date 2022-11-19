@@ -1,7 +1,6 @@
 package sdweb
 package http
 
-import play.core.parsers.FormUrlEncodedParser
 import sdweb.Authentication.AuthError
 import sdweb.http.Router.{AuthHeader, CookieSecret, IntPath, RichRequest, SessionCookie, UuidStr}
 import sdweb.{Authentication, Config, FileUtil, RequestProcessor}
@@ -74,8 +73,8 @@ final case class Router(
       case r @ Method.POST -> `base` / "login" =>
         (if (r.hasContentType(HeaderValues.applicationXWWWFormUrlencoded)) {
            for {
-             body <- r.body.asString
-             args = FormUrlEncodedParser.parse(body, r.charset.name())
+             body     <- r.body.asString
+             args     <- QueryStringDecoder.decode(body, r.charset)
              username <- ZIO.fromOption(args.get("username").flatMap(_.headOption))
              password <- ZIO.fromOption(args.get("password").flatMap(_.headOption))
              valid    <- auth.isValidUserPass(username, password)
