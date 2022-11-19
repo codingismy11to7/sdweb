@@ -1,4 +1,9 @@
-const BackendUrl = (process.env.NODE_ENV === "development" ? "http://localhost:5437" : "") + "/sd";
+const BackendUrl = (() => {
+  const location = document.location;
+  const main =
+    process.env.NODE_ENV === "development" ? "http://localhost:5437" : `${location.protocol}//${location.host}`;
+  return `${main}/sd`;
+})();
 
 export const gridImageUrl = (imageId: string) => `${BackendUrl}/image/${imageId}`;
 export const imageUrl = (imageId: string, imageIndex: number) => `${gridImageUrl(imageId)}/${imageIndex}`;
