@@ -82,7 +82,6 @@ export const MainPage = () => {
         <Box sx={{ overflow: "auto" }}>
           <List>
             {navItem("Search", "/", <SearchIcon />)}
-            {navItem("New Search", "search", <SearchIcon />)}
             {navItem("API", "api", <ApiIcon />)}
           </List>
           <Divider />

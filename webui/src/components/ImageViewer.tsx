@@ -3,10 +3,10 @@ import { Alert, Container, Snackbar, Typography } from "@mui/material";
 import { useRef, useState } from "react";
 import ImageGallery, { ReactImageGalleryItem } from "react-image-gallery";
 
-interface Props {
-  searchText: string;
-  images: ReactImageGalleryItem[];
-}
+type Props = Readonly<{
+  searchText?: string;
+  images: readonly ReactImageGalleryItem[];
+}>;
 
 const ImageViewer = ({ searchText, images }: Props) => {
   const galleryRef = useRef<ImageGallery>(null);
@@ -29,7 +29,7 @@ const ImageViewer = ({ searchText, images }: Props) => {
 
   return (
     <Container maxWidth={"md"}>
-      <Typography align={"center"}>{searchText}</Typography>
+      {!!searchText ? <Typography align={"center"}>{searchText}</Typography> : <></>}
       <ImageGallery
         ref={galleryRef}
         items={images}

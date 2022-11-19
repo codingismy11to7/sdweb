@@ -11,7 +11,7 @@ import reportWebVitals from "./reportWebVitals";
 
 const Redirect = () => {
   const nav = useNavigate();
-  useEffect(() => nav("/sd", { replace: true }), [nav]);
+  useEffect(() => nav("/sd/search", { replace: true }), [nav]);
   return <></>;
 };
 const router = createBrowserRouter([
@@ -20,7 +20,6 @@ const router = createBrowserRouter([
     path: "/sd",
     element: <App />,
     children: [
-      { index: true, element: <Search /> },
       { path: "search", element: <Search /> },
       { path: "search/:imageId", element: <Search /> },
       { path: "api", element: <Api /> },
