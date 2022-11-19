@@ -22,6 +22,7 @@ final case class Router(
     config: Config,
     fileUtil: FileUtil,
     sessionManager: SessionManager,
+    requests: RequestsPersistence,
 ) {
 
   private def getSessionId(r: Request) =
@@ -113,11 +114,19 @@ final case class Router(
 
       case r @ Method.POST -> `base` / "api" / "generate" =>
         validateAuth(r) *> r.handle { (g: HttpModel.Generate) =>
+          val async = r.url.queryParams.get("async").flatMap(_.head.toBooleanOption).getOrElse(false)
           for {
-            _   <- ZIO.debug(s"generate request for ${g.prompt}")
+            _   <- ZIO.logInfo(s"generate request for ${g.prompt}, async=$async")
             req <- sdweb.Request.create(g.prompt, g.seed).orElseFail(HttpError.BadRequest())
-            _   <- proc.processRequest(req)
+            process = proc.processRequest(req)
+            _ <- if (async) process.forkDaemon else process
           } yield HttpModel.GenerateResponse(req.id)
+        }
+
+      case r @ Method.GET -> `base` / "api" / "prompt" / UuidStr(imageId) =>
+        validateAuth(r) *> requests.requestById(imageId).map {
+          case Some(request) => Response.json(HttpModel.Generate(request.prompt, request.seed).toJson)
+          case None          => Response.status(Status.NotFound)
         }
 
       case r @ Method.GET -> `base` / "image" / UuidStr(id) => sendImage(r)(fileUtil.images(id).summary)
@@ -162,7 +171,10 @@ final case class Router(
 }
 
 object Router {
-  val live: URLayer[Authentication with RequestProcessor with Config with FileUtil with SessionManager, Router] =
+  val live: URLayer[
+    Authentication with RequestProcessor with Config with FileUtil with SessionManager with RequestsPersistence,
+    Router,
+  ] =
     ZLayer.fromFunction(apply _)
 
   final private val AuthHeader    = "X-AUTH-TOKEN"

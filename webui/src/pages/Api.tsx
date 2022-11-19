@@ -47,9 +47,12 @@ export const Api = () => (
                 Important: under normal circumstances, do <i>not</i> specify a custom seed.
               </b>
             </div>
+            <div>
+              Use the <code>async</code> request parameter to return the imageId before the image is done generating.
+            </div>
           </CardContent>
           <CardContent>
-            {codeBlock(<>POST: /&lt;base&gt;/api/generate</>)}
+            {codeBlock(<>POST: /&lt;base&gt;/api/generate[?async=true]</>)}
             {codeBlock(<>Body:</>)}
             {jsonBlock({
               prompt: "a unicorn getting mauled by a hyena",
@@ -73,6 +76,22 @@ export const Api = () => (
           <CardContent>
             {codeBlock(<>GET: /&lt;base&gt;/image/:imageId</>)}
             {codeBlock(<>GET: /&lt;base&gt;/image/:imageId/:imageNumber</>)}
+          </CardContent>
+        </Card>
+      </Grid>
+      <Grid item>
+        <Card>
+          <CardHeader title="Fetch Request" />
+          <CardContent>
+            <div>Get a request by imageId</div>
+          </CardContent>
+          <CardContent>
+            {codeBlock(<>GET: /&lt;base&gt;/api/prompt/:imageId</>)}
+            {codeBlock(<>Response:</>)}
+            {jsonBlock({
+              prompt: "cartoon darth vader",
+              seed: 42,
+            })}
           </CardContent>
         </Card>
       </Grid>

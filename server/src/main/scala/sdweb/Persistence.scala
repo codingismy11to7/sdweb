@@ -8,16 +8,17 @@ import sdweb.Users.User
 import zio._
 
 import java.sql.SQLException
+import java.util.UUID
 import javax.sql.DataSource
 
 final case class RequestsPersistence(quill: Quill.Sqlite[SnakeCase]) {
   import quill._
 
   val finishedRequests: IO[SQLException, List[Request]] = run(query[Request])
-  def finishedRequest(prompt: String, seed: Option[Int]): IO[SQLException, Option[Request]] = {
-    val id = Request.idFor(prompt, seed)
-    run(query[Request].filter(_.id == lift(id))).map(_.headOption)
-  }
+  def requestById(imageId: UUID): IO[SQLException, Option[Request]] =
+    run(query[Request].filter(_.id == lift(imageId))).map(_.headOption)
+  def finishedRequest(prompt: String, seed: Option[Int]): IO[SQLException, Option[Request]] =
+    requestById(Request.idFor(prompt, seed))
 
   def save(r: Request): IO[SQLException, Long] = run(query[Request].insertValue(lift(r)))
 }
