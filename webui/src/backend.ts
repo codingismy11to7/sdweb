@@ -1,4 +1,9 @@
-import { BackendUrl } from "./consts";
+const BackendUrl = (process.env.NODE_ENV === "development" ? "http://localhost:5437" : "") + "/sd";
+
+export const gridImageUrl = (imageId: string) => `${BackendUrl}/image/${imageId}`;
+export const imageUrl = (imageId: string, imageIndex: number) => `${gridImageUrl(imageId)}/${imageIndex}`;
+
+export const LoginUrl = `${BackendUrl}/login`;
 
 type LoggedIn = Readonly<{ loggedIn: boolean }>;
 
@@ -41,6 +46,11 @@ const backendPostRequest = <T, R>(
       console.error("Unrecoverable error during backend call", e);
       onUnrecoverableError?.(e);
     });
+
+type GenerateResult = Readonly<{ imageId: string }>;
+
+export const imageSearch = (prompt: string, onSuccess: (gr: GenerateResult) => void) =>
+  backendPostRequest("/api/generate", { prompt }, onSuccess);
 
 type ChangePasswordRequest = Readonly<{ currentPassword: string; newPassword: string }>;
 type ChangePassResponse = Readonly<{ error?: string }>;

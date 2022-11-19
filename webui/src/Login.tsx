@@ -6,7 +6,7 @@ import { useTheme } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import { useCallback, useRef, useState } from "react";
 import { Key } from "ts-key-enum";
-import { BackendUrl } from "./consts";
+import { LoginUrl } from "./backend";
 
 const Login = () => {
   const theme = useTheme();
@@ -22,7 +22,7 @@ const Login = () => {
 
   return (
     <Container maxWidth="sm">
-      <form method="post" action={`${BackendUrl}/login`} ref={formRef}>
+      <form method="post" action={LoginUrl} ref={formRef}>
         <Card variant="outlined" style={{ padding: theme.spacing() }}>
           <Grid container spacing={2} direction="column">
             <Grid item>
