@@ -3,9 +3,7 @@ import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import TextField from "@mui/material/TextField";
 import { useCallback, useState } from "react";
-import { BackendUrl } from "../consts";
-
-type GenerateResult = Readonly<{ imageId: string }>;
+import { gridImageUrl, imageSearch } from "../backend";
 
 export const Search = () => {
   const [generating, setGenerating] = useState(false);
@@ -14,15 +12,7 @@ export const Search = () => {
 
   const doSearch = useCallback((searchText: string) => {
     setGenerating(true);
-    fetch(`${BackendUrl}/api/generate`, {
-      method: "POST",
-      body: JSON.stringify({ prompt: searchText }),
-      credentials: "include",
-    })
-      .then(r => r.json())
-      .then(b => b as GenerateResult)
-      .then(gr => setImageId(gr.imageId))
-      .finally(() => setGenerating(false));
+    imageSearch(searchText, gr => setImageId(gr.imageId)).finally(() => setGenerating(false));
   }, []);
 
   return (
@@ -35,11 +25,7 @@ export const Search = () => {
         Generate
       </Button>
       {imageId !== undefined && imageId ? (
-        <img
-          src={`${BackendUrl}/image/${imageId}`}
-          alt={`generated result for ${searchText}`}
-          style={{ maxWidth: "100%" }}
-        />
+        <img src={gridImageUrl(imageId)} alt={`generated result for ${searchText}`} style={{ maxWidth: "100%" }} />
       ) : (
         <></>
       )}
