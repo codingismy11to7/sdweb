@@ -21,19 +21,14 @@ export const checkIsLoggedIn = (): Promise<LoggedIn> => {
 
 export const navigateToLogout = () => document.location.assign(`${BackendUrl}/logout`);
 
-const backendPostRequest = <T, R>(
+const backendRequest = <R>(
   suffix: string,
-  req: T,
+  opts: RequestInit,
   onSuccess: (res: R) => void,
   onError?: (error: Response) => void,
   onUnrecoverableError?: (error: any) => void,
 ) =>
-  fetch(`${BackendUrl}${suffix}`, {
-    method: "POST",
-    redirect: "follow",
-    body: JSON.stringify(req),
-    credentials: "include",
-  })
+  fetch(`${BackendUrl}${suffix}`, { redirect: "follow", credentials: "include", ...opts })
     .then(res => {
       if (res.status === 401) window.location.reload();
       else if (res.ok) res.json().then(onSuccess);
@@ -47,10 +42,34 @@ const backendPostRequest = <T, R>(
       onUnrecoverableError?.(e);
     });
 
+const backendGetRequest = <R>(
+  suffix: string,
+  onSuccess: (res: R) => void,
+  onError?: (error: Response) => void,
+  onUnrecoverableError?: (error: any) => void,
+) => backendRequest(suffix, { method: "GET" }, onSuccess, onError, onUnrecoverableError);
+
+const backendPostRequest = <T, R>(
+  suffix: string,
+  req: T,
+  onSuccess: (res: R) => void,
+  onError?: (error: Response) => void,
+  onUnrecoverableError?: (error: any) => void,
+) => backendRequest(suffix, { method: "POST", body: JSON.stringify(req) }, onSuccess, onError, onUnrecoverableError);
+
 type GenerateResult = Readonly<{ imageId: string }>;
 
-export const imageSearch = (prompt: string, onSuccess: (gr: GenerateResult) => void) =>
-  backendPostRequest("/api/generate", { prompt }, onSuccess);
+export const imageSearch = (prompt: string, onSuccess: (gr: GenerateResult) => void, async = false) =>
+  Promise.resolve("/api/generate" + (async ? "?async=true" : "")).then(url =>
+    backendPostRequest(url, { prompt }, onSuccess),
+  );
+
+type FetchRequestResult = Readonly<{ prompt: string; seed?: number }>;
+export const fetchRequest = (
+  imageId: string,
+  onSuccess: (frr: FetchRequestResult) => void,
+  onError: (r: Response) => void,
+) => backendGetRequest(`/api/prompt/${imageId}`, onSuccess, onError);
 
 type ChangePasswordRequest = Readonly<{ currentPassword: string; newPassword: string }>;
 type ChangePassResponse = Readonly<{ error?: string }>;
