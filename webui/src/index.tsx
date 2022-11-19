@@ -20,6 +20,7 @@ const router = createBrowserRouter([
     path: "/sd",
     element: <App />,
     children: [
+      { index: true, element: <Redirect /> },
       { path: "search", element: <Search /> },
       { path: "search/:imageId", element: <Search /> },
       { path: "api", element: <Api /> },

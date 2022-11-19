@@ -21,10 +21,12 @@ import Typography from "@mui/material/Typography";
 import { ReactNode, useCallback, useState } from "react";
 import { To, NavigateOptions, Outlet, useNavigate } from "react-router-dom";
 import { navigateToLogout } from "./backend";
+import { useIsDesktop } from "./util/hooks";
 
 const drawerWidth = 240;
 
 export const MainPage = () => {
+  const isDesktop = useIsDesktop();
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const toggleDrawer = useCallback(() => setDrawerOpen(o => !o), []);
@@ -91,7 +93,7 @@ export const MainPage = () => {
           </List>
         </Box>
       </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+      <Box component="main" sx={{ flexGrow: 1, p: isDesktop ? 3 : 0, width: "100%" }}>
         <Toolbar />
         <Outlet />
       </Box>

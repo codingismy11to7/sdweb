@@ -1,3 +1,4 @@
+import { useMediaQuery } from "@mui/material";
 import { useEffect, useRef } from "react";
 
 export const usePrevious = <T>(value: T): T | undefined => {
@@ -7,3 +8,5 @@ export const usePrevious = <T>(value: T): T | undefined => {
   }, [value]);
   return ref.current;
 };
+
+export const useIsDesktop = () => useMediaQuery("(min-width:600px)");

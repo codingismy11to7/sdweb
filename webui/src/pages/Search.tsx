@@ -78,7 +78,7 @@ export const Search = () => {
             if (e.key === Key.Enter && searchText) doSearch(searchText);
           }}
           autoFocus
-          style={{ width: 500 }}
+          style={{ flexGrow: 1, maxWidth: "500px" }}
         />
         <Fab disabled={!searchText.length} onClick={() => doSearch(searchText)} color={"primary"} style={{ margin: 5 }}>
           <PrecisionManufacturingIcon />

@@ -2,6 +2,7 @@ import { ChevronLeft, ChevronRight, Share } from "@mui/icons-material";
 import { Alert, Container, Snackbar, Typography } from "@mui/material";
 import { useRef, useState } from "react";
 import ImageGallery, { ReactImageGalleryItem } from "react-image-gallery";
+import { useIsDesktop } from "../util/hooks";
 
 type Props = Readonly<{
   searchText?: string;
@@ -9,6 +10,7 @@ type Props = Readonly<{
 }>;
 
 const ImageViewer = ({ searchText, images }: Props) => {
+  const isDesktop = useIsDesktop();
   const galleryRef = useRef<ImageGallery>(null);
   const [alertOpen, setAlertOpen] = useState(false);
 
@@ -28,7 +30,7 @@ const ImageViewer = ({ searchText, images }: Props) => {
   };
 
   return (
-    <Container maxWidth={"md"}>
+    <Container maxWidth={"md"} sx={{ p: isDesktop ? 1 : 0 }}>
       {!!searchText ? <Typography align={"center"}>{searchText}</Typography> : <></>}
       <ImageGallery
         ref={galleryRef}
