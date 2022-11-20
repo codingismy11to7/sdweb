@@ -1,3 +1,13 @@
+import {
+  CardContent,
+  CardHeader,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  Link,
+  Typography,
+} from "@mui/material";
 import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
 import Container from "@mui/material/Container";
@@ -13,6 +23,7 @@ const Login = () => {
   const [userName, setUserName] = useState("");
   const [password, setPassword] = useState("");
   const formRef = useRef<HTMLFormElement>(null);
+  const [dialogText, setDialogText] = useState("");
 
   const enabled = !!userName.length && !!password.length;
 
@@ -22,8 +33,17 @@ const Login = () => {
 
   return (
     <Container maxWidth="sm">
-      <form method="post" action={LoginUrl} ref={formRef}>
-        <Card variant="outlined" style={{ padding: theme.spacing() }}>
+      <Dialog open={!!dialogText} onClose={() => setDialogText("")}>
+        <DialogContent>
+          <DialogContentText>{dialogText} Contact me.</DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDialogText("")}>Close</Button>
+        </DialogActions>
+      </Dialog>
+      <Card variant="outlined" style={{ padding: theme.spacing() }}>
+        <CardHeader title="Login" />
+        <CardContent component="form" method="post" action={LoginUrl} ref={formRef}>
           <Grid container spacing={2} direction="column">
             <Grid item>
               <TextField
@@ -56,8 +76,24 @@ const Login = () => {
               </Button>
             </Grid>
           </Grid>
-        </Card>
-      </form>
+        </CardContent>
+        <CardContent>
+          <Grid item>
+            <Grid container spacing={1} style={{ textAlign: "center" }}>
+              <Grid item xs={6}>
+                <Link component="button" variant="body2" onClick={() => setDialogText("That sucks.")}>
+                  Forgot Password
+                </Link>
+              </Grid>
+              <Grid item xs={6}>
+                <Link component="button" variant="body2" onClick={() => setDialogText("You can't.")}>
+                  Create Account
+                </Link>
+              </Grid>
+            </Grid>
+          </Grid>
+        </CardContent>
+      </Card>
     </Container>
   );
 };
