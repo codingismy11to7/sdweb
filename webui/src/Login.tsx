@@ -6,6 +6,7 @@ import Grid from "@mui/material/Grid";
 import { useTheme } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import { useCallback, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Key } from "ts-key-enum";
 import { LoginUrl } from "./rpc/backend";
 
@@ -15,6 +16,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const formRef = useRef<HTMLFormElement>(null);
   const [dialogText, setDialogText] = useState("");
+  const [t] = useTranslation();
 
   const enabled = !!userName.length && !!password.length;
 
@@ -39,7 +41,7 @@ const Login = () => {
             <Grid item>
               <TextField
                 autoFocus
-                label="Username"
+                label={t("common.username")}
                 name="username"
                 required
                 value={userName}
@@ -51,7 +53,7 @@ const Login = () => {
               <TextField
                 type={"password"}
                 name="password"
-                label="Password"
+                label={t("common.password")}
                 required
                 value={password}
                 fullWidth
@@ -63,7 +65,7 @@ const Login = () => {
             </Grid>
             <Grid item>
               <Button fullWidth={true} variant="contained" onClick={doLogin} disabled={!enabled}>
-                Login
+                {t("common.login")}
               </Button>
             </Grid>
           </Grid>

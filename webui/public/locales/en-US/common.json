@@ -1,0 +1,21 @@
+{
+  "common": {
+    "title": "Stable Diffusion",
+    "github": "GitHub Repository",
+    "search": "Search",
+    "api": "API",
+    "changepw": "Change $t(password)",
+    "login": "Login",
+    "logout": "Logout",
+    "username": "Username",
+    "password": "Password",
+    "searchtext": "Description of image",
+    "notfound": "Request not found",
+    "linkcopied":  "Link copied to clipboard!",
+    "pwchanged": "$t(password) changed successfully",
+    "currentpw": "Current $t(password)",
+    "newpw": "New $t(password)",
+    "confirmpw": "Confirm $t(password)",
+    "changepw": "Change $t(password)"
+  }
+}

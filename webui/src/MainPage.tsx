@@ -19,6 +19,7 @@ import ListItemText from "@mui/material/ListItemText";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import { ReactNode, useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { To, NavigateOptions, Outlet, useNavigate } from "react-router-dom";
 import { navigateToLogout } from "./rpc/backend";
 import { useIsDesktop } from "./util/hooks";
@@ -28,6 +29,7 @@ const drawerWidth = 240;
 export const MainPage = () => {
   const isDesktop = useIsDesktop();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [t] = useTranslation();
 
   const toggleDrawer = useCallback(() => setDrawerOpen(o => !o), []);
 
@@ -62,9 +64,9 @@ export const MainPage = () => {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Stable Diffusion
+            {t("common.title")}
           </Typography>
-          <Tooltip title="GitHub Repository">
+          <Tooltip title={t("common.github")}>
             <IconButton color="inherit" onClick={loadGithub}>
               <GitHubIcon />
             </IconButton>
@@ -83,13 +85,13 @@ export const MainPage = () => {
         <Toolbar />
         <Box sx={{ overflow: "auto" }}>
           <List>
-            {navItem("Search", "/", <SearchIcon />)}
-            {navItem("API", "api", <ApiIcon />)}
+            {navItem(t("common.search"), "/", <SearchIcon />)}
+            {navItem(t("common.api"), "api", <ApiIcon />)}
           </List>
           <Divider />
           <List>
-            {navItem("Change Password", "password", <KeyIcon />)}
-            {menuItem("Logout", navigateToLogout, <LogoutIcon />)}
+            {navItem(t("common.changepw"), "password", <KeyIcon />)}
+            {menuItem(t("common.logout"), navigateToLogout, <LogoutIcon />)}
           </List>
         </Box>
       </Drawer>
