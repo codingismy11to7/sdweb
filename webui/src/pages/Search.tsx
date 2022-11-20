@@ -77,6 +77,9 @@ export const Search = () => {
           onKeyUp={e => {
             if (e.key === Key.Enter && searchText) doSearch(searchText);
           }}
+          onKeyDown={e => {
+            if (e.key === Key.ArrowLeft || e.key === Key.ArrowRight) e.stopPropagation();
+          }}
           autoFocus
           style={{ flexGrow: 1, maxWidth: "500px" }}
         />
