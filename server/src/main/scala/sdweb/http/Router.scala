@@ -78,15 +78,15 @@ final case class Router(
              args     <- QueryStringDecoder.decode(body, r.charset)
              username <- ZIO.fromOption(args.get("username").flatMap(_.headOption))
              password <- ZIO.fromOption(args.get("password").flatMap(_.headOption))
-             valid    <- auth.isValidUserPass(username, password)
-             _        <- (ZIO.debug(s"got bad login for $username") *> ZIO.fail {}).unless(valid)
-             _        <- ZIO.debug(s"got valid login for $username")
+             userOpt  <- auth.authenticateUser(username, password)
+             user     <- ZIO.logWarning(s"got bad login for $username") *> ZIO.fromOption(userOpt).orElseFail {}
+             _        <- ZIO.logInfo(s"got valid login for $username")
              sessId   <- Random.nextUUID
-             _        <- sessionManager.openSession(sessId, username)
+             _        <- sessionManager.openSession(sessId, user)
            } yield redirectToApp(r)
              .addCookie(Cookie(SessionCookie, sessId.toString).withMaxAge(30.days.getSeconds).sign(CookieSecret))
-         } else ZIO.debug(s"got bad login ct") *> ZIO.fail {}).catchAll(e =>
-          ZIO.debug(s"login failed with $e") as redirectToApp(r),
+         } else ZIO.logInfo(s"got bad login contenttype") *> ZIO.fail {}).catchAll(e =>
+          ZIO.logInfo(s"login failed with $e") as redirectToApp(r),
         )
 
       case r @ Method.POST -> `base` / "api" / "key" / "reset" =>
@@ -101,9 +101,9 @@ final case class Router(
       case r @ Method.POST -> `base` / "api" / "user" / "password" =>
         r.handle { (chg: HttpModel.ChangePassword) =>
           currentUser(r) flatMap {
-            case Some(username) =>
+            case Some(user) =>
               val resp = HttpModel.ChangePasswordResponse()
-              auth.updatePassword(username, chg.currentPassword, chg.newPassword).as(resp).catchAll {
+              auth.updatePassword(user.username, chg.currentPassword, chg.newPassword).as(resp).catchAll {
                 case AuthError.InvalidCredentials(_) => ZIO succeed resp.withError("Incorrect password")
                 case AuthError.DatabaseError(e)      => ZIO fail e
               }

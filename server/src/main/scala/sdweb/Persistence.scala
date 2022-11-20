@@ -3,56 +3,83 @@ package sdweb
 import com.typesafe.config.ConfigFactory
 import io.getquill.SnakeCase
 import io.getquill.jdbczio.Quill
-import sdweb.ApiKeys.ApiKey
-import sdweb.Users.User
+import sdweb.model.User
 import zio._
 
 import java.sql.SQLException
 import java.util.UUID
 import javax.sql.DataSource
 
-final case class RequestsPersistence(quill: Quill.Sqlite[SnakeCase]) {
-  import quill._
-
-  val finishedRequests: IO[SQLException, List[Request]] = run(query[Request])
-  def requestById(imageId: UUID): IO[SQLException, Option[Request]] =
-    run(query[Request].filter(_.id == lift(imageId))).map(_.headOption)
-  def finishedRequest(prompt: String, seed: Option[Int]): IO[SQLException, Option[Request]] =
-    requestById(Request.idFor(prompt, seed))
-
-  def save(r: Request): IO[SQLException, Long] = run(query[Request].insertValue(lift(r)))
+trait RequestsPersistence {
+  def finishedRequests: IO[SQLException, List[Request]]
+  def requestById(imageId: UUID): IO[SQLException, Option[Request]]
+  def finishedRequest(prompt: String, seed: Option[Int]): IO[SQLException, Option[Request]]
+  def save(r: Request): IO[SQLException, Long]
 }
 
-object Users {
-  final private case class User(username: String, passwordHash: String)
-}
-final case class Users(quill: Quill.Sqlite[SnakeCase]) {
-  import quill._
-
-  def save(username: String, hashedPw: String): IO[SQLException, Long] =
-    run(query[User].insertValue(lift(User(username, hashedPw))))
-
-  def isValid(username: String, hashedPw: String): IO[SQLException, Boolean] =
-    run(query[User].filter(u => u.username == lift(username) && u.passwordHash == lift(hashedPw))).map(_.nonEmpty)
-
-  def savePassword(username: String, hashedPw: String): IO[SQLException, Long] =
-    run(query[User].filter(_.username == lift(username)).update(_.passwordHash -> lift(hashedPw)))
+trait Users {
+  def saveUser(username: String, hashedPw: String): IO[SQLException, Long]
+  def userIfValidCreds(username: String, hashedPw: String): IO[SQLException, Option[User]]
+  def isValid(username: String, hashedPw: String): IO[SQLException, Boolean]
+  def savePassword(username: String, hashedPw: String): IO[SQLException, Long]
 }
 
-object ApiKeys {
-  final private case class ApiKey(key: String, username: String)
-}
-final case class ApiKeys(quill: Quill.Sqlite[SnakeCase]) {
-  import quill._
-
-  def save(key: String, username: String): IO[SQLException, Long] =
-    run(query[ApiKey].insertValue(lift(ApiKey(key, username))))
-
-  def userFor(apiKey: String): IO[SQLException, Option[String]] =
-    run(query[ApiKey].filter(_.key == lift(apiKey))).map(_.headOption.map(_.username))
+trait ApiKeys {
+  def saveAPIKey(key: String, username: String): IO[SQLException, Long]
+  def userFor(apiKey: String): IO[SQLException, Option[User]]
 }
 
 object Persistence {
+  final private case class PersistUser(username: String, passwordHash: String, admin: Boolean) {
+    def toUser: User = User(username, admin)
+  }
+  final private case class ApiKey(key: String, username: String)
+
+  final private case class PersistenceImpl(quill: Quill.Sqlite[SnakeCase])
+      extends RequestsPersistence
+      with Users
+      with ApiKeys {
+    import quill._
+
+    // Requests
+    override val finishedRequests: IO[SQLException, List[Request]] = run(query[Request])
+
+    override def requestById(imageId: UUID): IO[SQLException, Option[Request]] =
+      run(query[Request].filter(_.id == lift(imageId))).map(_.headOption)
+
+    override def finishedRequest(prompt: String, seed: Option[Int]): IO[SQLException, Option[Request]] =
+      requestById(Request.idFor(prompt, seed))
+
+    override def save(r: Request): IO[SQLException, Long] = run(query[Request].insertValue(lift(r)))
+
+    private val userQuery = quote(querySchema[PersistUser]("user"))
+
+    // Users
+    override def saveUser(username: String, hashedPw: String): IO[SQLException, Long] =
+      run(userQuery.insertValue(lift(PersistUser(username, hashedPw, admin = false))))
+
+    override def userIfValidCreds(username: String, hashedPw: String): IO[SQLException, Option[User]] =
+      run(userQuery.filter(u => u.username == lift(username) && u.passwordHash == lift(hashedPw)))
+        .map(_.headOption.map(_.toUser))
+
+    override def isValid(username: String, hashedPw: String): IO[SQLException, Boolean] =
+      userIfValidCreds(username, hashedPw).map(_.nonEmpty)
+
+    override def savePassword(username: String, hashedPw: String): IO[SQLException, Long] =
+      run(userQuery.filter(_.username == lift(username)).update(_.passwordHash -> lift(hashedPw)))
+
+    // API Keys
+    override def saveAPIKey(key: String, username: String): IO[SQLException, Long] =
+      run(query[ApiKey].insertValue(lift(ApiKey(key, username))))
+
+    override def userFor(apiKey: String): IO[SQLException, Option[User]] =
+      run {
+        for {
+          a <- query[ApiKey].filter(_.key == lift(apiKey))
+          u <- userQuery if a.username == u.username
+        } yield u
+      }.map(_.headOption.map(_.toUser))
+  }
 
   private val datasource = {
     val ds = Quill.DataSource.fromConfig(ConfigFactory.load().getConfig("ctx"))
@@ -72,12 +99,14 @@ object Persistence {
           stmt.executeUpdate("""create table if not exists user (
               | username varchar not null,
               | password_hash varchar not null,
+              | admin boolean not null,
               | primary key (username) on conflict ignore
               |)""".stripMargin)
           stmt.executeUpdate(
-            """insert into user (username, password_hash) values (
+            """insert into user (username, password_hash, admin) values (
               | 'steven',
-              | 'cc63dc1e5cd9de1c603d9d934f4f14e70a6b4ebfb59d205491a2bcc2da3ffef7855c72a7f8f5e39d366fadb38ae5acaa286a861fbd2033ac449fe48ba70c7833'
+              | 'cc63dc1e5cd9de1c603d9d934f4f14e70a6b4ebfb59d205491a2bcc2da3ffef7855c72a7f8f5e39d366fadb38ae5acaa286a861fbd2033ac449fe48ba70c7833',
+              | true
               |)""".stripMargin,
           )
           stmt.executeUpdate("""create table if not exists api_key (
@@ -96,9 +125,7 @@ object Persistence {
 
   val live: TaskLayer[RequestsPersistence with Users with ApiKeys] =
     ZLayer.make[RequestsPersistence with Users with ApiKeys](
-      ZLayer.fromFunction(RequestsPersistence(_)),
-      ZLayer.fromFunction(Users(_)),
-      ZLayer.fromFunction(ApiKeys(_)),
+      ZLayer.fromFunction(PersistenceImpl.apply _),
       datasource,
       Quill.Sqlite.fromNamingStrategy(SnakeCase),
     )
