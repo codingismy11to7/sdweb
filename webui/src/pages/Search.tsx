@@ -4,6 +4,7 @@ import Backdrop from "@mui/material/Backdrop";
 import CircularProgress from "@mui/material/CircularProgress";
 import TextField from "@mui/material/TextField";
 import { lazy, Suspense, useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { Key } from "ts-key-enum";
 import { fetchRequest, gridImageUrl, imageSearch } from "../rpc/backend";
@@ -31,6 +32,7 @@ export const Search = () => {
   const [searchText, setSearchText] = useState("");
   const [notFound, setNotFound] = useState<boolean>();
   const navigate = useNavigate();
+  const [t] = useTranslation();
 
   const oldImageId = usePrevious(imageId);
   useEffect(() => {
@@ -71,7 +73,7 @@ export const Search = () => {
       </Backdrop>
       <div style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
         <TextField
-          label="Description of image"
+          label={t("common.searchtext")}
           value={searchText}
           onChange={e => setSearchText(e.target.value)}
           onKeyUp={e => {
@@ -89,7 +91,7 @@ export const Search = () => {
       </div>
       {notFound ? (
         <div>
-          <Alert severity="warning">Request not found</Alert>
+          <Alert severity="warning">{t("common.notfound")}</Alert>
         </div>
       ) : (
         <></>

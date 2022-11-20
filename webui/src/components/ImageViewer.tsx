@@ -1,6 +1,7 @@
 import { ChevronLeft, ChevronRight, Share } from "@mui/icons-material";
 import { Alert, Container, Snackbar, Typography } from "@mui/material";
 import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import ImageGallery, { ReactImageGalleryItem } from "react-image-gallery";
 import { useIsDesktop } from "../util/hooks";
 
@@ -13,6 +14,7 @@ const ImageViewer = ({ searchText, images }: Props) => {
   const isDesktop = useIsDesktop();
   const galleryRef = useRef<ImageGallery>(null);
   const [alertOpen, setAlertOpen] = useState(false);
+  const [t] = useTranslation();
 
   const handleLeftClick = () => {
     if (galleryRef.current) galleryRef.current.slideToIndex(galleryRef.current.getCurrentIndex() - 1);
@@ -59,7 +61,7 @@ const ImageViewer = ({ searchText, images }: Props) => {
         onClose={() => setAlertOpen(false)}
         anchorOrigin={{ horizontal: "center", vertical: "bottom" }}
       >
-        <Alert severity="success">Link copied to clipboard!</Alert>
+        <Alert severity="success">{t("common.linkcopied")}</Alert>
       </Snackbar>
     </Container>
   );

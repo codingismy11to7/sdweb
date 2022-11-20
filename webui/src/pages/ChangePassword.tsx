@@ -5,11 +5,12 @@ import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import { useCallback, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { navigateToLogout, sendChangePasswordRequest } from "../rpc/backend";
 
-const logoutAction = (
+const logoutAction = (label: string) => (
   <Button color="secondary" size="small" onClick={navigateToLogout}>
-    Logout
+    {label}
   </Button>
 );
 
@@ -19,6 +20,7 @@ const ChangePassword = () => {
   const [confirmPass, setConfirmPass] = useState("");
   const [passError, setPassError] = useState("");
   const [alertOpen, setAlertOpen] = useState(false);
+  const [t] = useTranslation();
 
   const enabled = !!newPassword.length && !!confirmPass.length && newPassword === confirmPass;
 
@@ -46,7 +48,7 @@ const ChangePassword = () => {
           <Grid item>
             <TextField
               autoFocus
-              label={"Current Password"}
+              label={t("common.currentpw")}
               type={"password"}
               required
               value={currentPassword}
@@ -58,7 +60,7 @@ const ChangePassword = () => {
           </Grid>
           <Grid item>
             <TextField
-              label={"New Password"}
+              label={t("common.newpw")}
               type={"password"}
               required
               value={newPassword}
@@ -68,7 +70,7 @@ const ChangePassword = () => {
           </Grid>
           <Grid item>
             <TextField
-              label={"Confirm Password"}
+              label={t("common.confirmpw")}
               type={"password"}
               required
               value={confirmPass}
@@ -78,7 +80,7 @@ const ChangePassword = () => {
           </Grid>
           <Grid item>
             <Button fullWidth={true} variant="contained" onClick={doChange} disabled={!enabled}>
-              Change
+              {t("common.changepw")}
             </Button>
           </Grid>
         </Grid>
@@ -89,8 +91,8 @@ const ChangePassword = () => {
         onClose={() => setAlertOpen(false)}
         anchorOrigin={{ horizontal: "center", vertical: "bottom" }}
       >
-        <Alert severity="success" action={logoutAction}>
-          Password changed successfully
+        <Alert severity="success" action={logoutAction(t("common.logout"))}>
+          {t("common.pwchanged")}
         </Alert>
       </Snackbar>
     </Container>
