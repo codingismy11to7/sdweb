@@ -5,7 +5,7 @@ import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
 import { useCallback, useState } from "react";
-import { navigateToLogout, sendChangePasswordRequest } from "../backend";
+import { navigateToLogout, sendChangePasswordRequest } from "../rpc/backend";
 
 const logoutAction = (
   <Button color="secondary" size="small" onClick={navigateToLogout}>

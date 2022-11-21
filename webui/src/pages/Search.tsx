@@ -6,7 +6,7 @@ import TextField from "@mui/material/TextField";
 import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Key } from "ts-key-enum";
-import { fetchRequest, gridImageUrl, imageSearch } from "../backend";
+import { fetchRequest, gridImageUrl, imageSearch } from "../rpc/backend";
 import { usePrevious } from "../util/hooks";
 
 const ImageViewer = lazy(() => import("../components/ImageViewer"));

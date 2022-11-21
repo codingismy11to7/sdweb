@@ -3,9 +3,9 @@ import Skeleton from "@mui/material/Skeleton";
 import Container from "@mui/system/Container";
 import ThemeProvider from "@mui/system/ThemeProvider";
 import { useEffect, useState } from "react";
-import { checkIsLoggedIn } from "./backend";
 import Login from "./Login";
 import { MainPage } from "./MainPage";
+import { checkIsLoggedIn } from "./rpc/backend";
 
 const theme = createTheme();
 

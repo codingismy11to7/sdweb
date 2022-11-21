@@ -1,13 +1,4 @@
-import {
-  CardContent,
-  CardHeader,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  Link,
-  Typography,
-} from "@mui/material";
+import { CardContent, CardHeader, Dialog, DialogActions, DialogContent, DialogContentText, Link } from "@mui/material";
 import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
 import Container from "@mui/material/Container";
@@ -16,7 +7,7 @@ import { useTheme } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 import { useCallback, useRef, useState } from "react";
 import { Key } from "ts-key-enum";
-import { LoginUrl } from "./backend";
+import { LoginUrl } from "./rpc/backend";
 
 const Login = () => {
   const theme = useTheme();
