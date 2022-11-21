@@ -20,7 +20,7 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import { ReactNode, useCallback, useState } from "react";
 import { To, NavigateOptions, Outlet, useNavigate } from "react-router-dom";
-import { navigateToLogout } from "./backend";
+import { navigateToLogout } from "./rpc/backend";
 import { useIsDesktop } from "./util/hooks";
 
 const drawerWidth = 240;

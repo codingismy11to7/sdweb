@@ -1,3 +1,5 @@
+import { ChangePassword, ChangePasswordResponse, Generate, GenerateResponse } from "./models";
+
 const BackendUrl = (() => {
   const location = document.location;
   const main =
@@ -62,25 +64,16 @@ const backendPostRequest = <T, R>(
   onUnrecoverableError?: (error: any) => void,
 ) => backendRequest(suffix, { method: "POST", body: JSON.stringify(req) }, onSuccess, onError, onUnrecoverableError);
 
-type GenerateResult = Readonly<{ imageId: string }>;
-
-export const imageSearch = (prompt: string, onSuccess: (gr: GenerateResult) => void, async = false) =>
+export const imageSearch = (prompt: string, onSuccess: (gr: GenerateResponse) => void, async = false) =>
   Promise.resolve("/api/generate" + (async ? "?async=true" : "")).then(url =>
     backendPostRequest(url, { prompt }, onSuccess),
   );
 
-type FetchRequestResult = Readonly<{ prompt: string; seed?: number }>;
-export const fetchRequest = (
-  imageId: string,
-  onSuccess: (frr: FetchRequestResult) => void,
-  onError: (r: Response) => void,
-) => backendGetRequest(`/api/prompt/${imageId}`, onSuccess, onError);
-
-type ChangePasswordRequest = Readonly<{ currentPassword: string; newPassword: string }>;
-type ChangePassResponse = Readonly<{ error?: string }>;
+export const fetchRequest = (imageId: string, onSuccess: (frr: Generate) => void, onError: (r: Response) => void) =>
+  backendGetRequest(`/api/prompt/${imageId}`, onSuccess, onError);
 
 export const sendChangePasswordRequest = (
-  req: ChangePasswordRequest,
-  onSuccess: (res: ChangePassResponse) => void,
+  req: ChangePassword,
+  onSuccess: (res: ChangePasswordResponse) => void,
   onError?: (error: Response) => void,
 ): Promise<void> => backendPostRequest("/api/user/password", req, onSuccess, onError);
