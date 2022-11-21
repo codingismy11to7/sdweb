@@ -15,6 +15,7 @@ val V = new {
   val zioConfig  = "3.0.2"
   val zioHttp    = "0.0.1+1-6229ad80-SNAPSHOT"
   val zioJson    = "0.3.0"
+  val zioLogging = "2.1.4"
   val zioNio     = "2.0.0"
   val zioProcess = "0.7.1"
 }
@@ -26,6 +27,7 @@ lazy val server = project
       "ch.qos.logback" % "logback-classic"     % V.logback,
       "com.beachape"  %% "enumeratum"          % V.enumeratum,
       "dev.zio"       %% "zio"                 % V.zio,
+      "dev.zio"       %% "zio-logging-slf4j"   % V.zioLogging,
       "dev.zio"       %% "zio-config-magnolia" % V.zioConfig,
       "dev.zio"       %% "zio-config-typesafe" % V.zioConfig,
       "dev.zio"       %% "zio-http"            % V.zioHttp,

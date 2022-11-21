@@ -33,10 +33,10 @@ final case class Router(
       case UuidStr(sessId) => sessId
     }
 
-  private def userForSessionId(r: Request) = getSessionId(r) match {
-    case Some(sId) => sessionManager.userForSession(sId)
-    case None      => ZIO.succeed(None)
-  }
+  private def userAndSessionId(r: Request) =
+    ZIO.fromOption(getSessionId(r)).flatMap(sid => sessionManager.userForSession(sid).some.map(_ -> sid)).unsome
+
+  private def userForSessionId(r: Request) = userAndSessionId(r).map(_.map(_._1))
 
   private def hasValidSessionId(r: Request) = userForSessionId(r).map(_.isDefined)
 
@@ -120,7 +120,10 @@ final case class Router(
 
   private val sessionRoutes = Http.collectZIO[Request] {
     case r @ Method.GET -> `base` / "logout" =>
-      getSessionId(r).fold(ZIO.unit)(sessionManager.closeSession) as redirectToApp(r)
+      userAndSessionId(r).flatMap {
+        case None           => ZIO.unit
+        case Some((u, sId)) => ZIO.logInfo(s"user ${u.username} logging out") *> sessionManager.closeSession(sId)
+      } as redirectToApp(r)
 
     case r @ Method.GET -> `base` / "loggedIn" =>
       currentUser(r)
@@ -138,7 +141,7 @@ final case class Router(
            username <- ZIO.fromOption(args.get("username").flatMap(_.headOption))
            password <- ZIO.fromOption(args.get("password").flatMap(_.headOption))
            userOpt  <- auth.authenticateUser(username, password)
-           user     <- ZIO.logWarning(s"got bad login for $username") *> ZIO.fromOption(userOpt).orElseFail {}
+           user     <- ZIO.fromOption(userOpt).flatMapError(_ => ZIO.logWarning(s"got bad login for $username"))
            _        <- ZIO.logInfo(s"got valid login for $username")
            sessId   <- Random.nextUUID
            _        <- sessionManager.openSession(sessId, user)
