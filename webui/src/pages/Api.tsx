@@ -1,10 +1,9 @@
 import { CardContent, Grid } from "@mui/material";
 import Card from "@mui/material/Card";
 import CardHeader from "@mui/material/CardHeader";
-import Typography from "@mui/material/Typography";
 import { ReactNode } from "react";
 
-const codeBlock = (el: ReactNode) => <code style={{ display: "block", whiteSpace: "pre" }}>{el}</code>;
+const codeBlock = (el: ReactNode) => <code style={{ display: "block", whiteSpace: "pre-wrap" }}>{el}</code>;
 const jsonBlock = (j: any) => (
   <Card variant="outlined" sx={{ p: 2 }}>
     {codeBlock(JSON.stringify(j, undefined, 2))}
@@ -13,7 +12,6 @@ const jsonBlock = (j: any) => (
 
 export const Api = () => (
   <>
-    <Typography variant="h3">API</Typography>
     <Grid direction={"column"} container spacing={2}>
       <Grid item>
         <Card>
