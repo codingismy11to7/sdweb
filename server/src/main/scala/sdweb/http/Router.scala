@@ -2,7 +2,7 @@ package sdweb
 package http
 
 import sdweb.Authentication.AuthError
-import sdweb.http.Router.{AuthHeader, CookieSecret, IntPath, RichRequest, SessionCookie, UuidStr}
+import sdweb.http.Router.{jsonResponse, AuthHeader, CookieSecret, IntPath, RichRequest, SessionCookie, UuidStr}
 import sdweb.{Authentication, Config, FileUtil, RequestProcessor}
 import zio._
 import zio.http._
@@ -72,7 +72,9 @@ final case class Router(
   private def textResponse(msg: String, status: Status = Status.Ok) = ZIO.succeed(Response.text(msg).setStatus(status))
 
   private val adminApiRoutes = Http.collectZIO[Request] {
-    case r @ Method.PUT -> `base` / "api" / "admin" / "user" =>
+    case r @ Method.GET -> `base` / "api" / "admin" / "users" => validateAdmin(r) *> users.users.map(jsonResponse(_))
+
+    case r @ Method.PUT -> `base` / "api" / "admin" / "users" =>
       validateAdmin(r) *> r.handleStatus[HttpModel.Admin.CreateUser] { cu =>
         val username = cu.username.trim
         import HttpModel.Admin.CreateUserError._
@@ -91,12 +93,12 @@ final case class Router(
         }
       }
 
-    case r @ Method.POST -> `base` / "api" / "admin" / "user" / username / "password" =>
+    case r @ Method.POST -> `base` / "api" / "admin" / "users" / username / "password" =>
       validateAdmin(r) *> r.handle[HttpModel.Admin.SetUserPassword] { sup =>
         auth.adminUpdatePassword(username, sup.password).as(Response.ok)
       }
 
-    case r @ Method.DELETE -> `base` / "api" / "admin" / "user" / username =>
+    case r @ Method.DELETE -> `base` / "api" / "admin" / "users" / username =>
       currentAdminUser(r) flatMap {
         case None                              => ZIO.fail(HttpError.Unauthorized())
         case Some(u) if u.username == username => textResponse("Can't delete yourself", Status.BadRequest)
@@ -239,32 +241,30 @@ object Router {
     def unapply(s: String): Option[RuntimeFlags] = s.toIntOption
   }
 
+  private def jsonResponse[A: JsonEncoder](a: A) = Response.json(a.toJson)
+
   private def decodeJsonBody[A: JsonDecoder](r: Request) = for {
     json <- r.body.asString
     body <- ZIO.fromEither(json.fromJson[A]).mapError(new Exception(_))
   } yield body
 
   final case class ResponseHandler[A](r: Request) {
-    def apply[E <: Throwable](f: A => IO[E, Response])(implicit D: JsonDecoder[A]): ZIO[Any, Throwable, Response] =
+    def apply[E <: Throwable](f: A => IO[E, Response])(implicit D: JsonDecoder[A]): Task[Response] =
       for {
         body <- decodeJsonBody[A](r)
         resp <- f(body)
       } yield resp
   }
   final case class JsonResponseHandler[A](r: Request) {
-    def apply[B: JsonEncoder, E <: Throwable](
-        f: A => IO[E, B],
-    )(implicit D: JsonDecoder[A]): ZIO[Any, Throwable, Response] =
-      ResponseHandler[A](r)(a => f(a).map(b => Response.json(b.toJson)))
+    def apply[B: JsonEncoder, E <: Throwable](f: A => IO[E, B])(implicit D: JsonDecoder[A]): Task[Response] =
+      ResponseHandler[A](r)(a => f(a).map(jsonResponse(_)))
   }
   final case class StatusResponseHandler[A](r: Request) {
-    def apply[B: JsonEncoder, E <: Throwable](
-        f: A => IO[E, (B, Status)],
-    )(implicit D: JsonDecoder[A]): ZIO[Any, Throwable, Response] =
+    def apply[B: JsonEncoder, E <: Throwable](f: A => IO[E, (B, Status)])(implicit D: JsonDecoder[A]): Task[Response] =
       for {
         body           <- decodeJsonBody[A](r)
         (resp, status) <- f(body)
-      } yield Response.json(resp.toJson).setStatus(status)
+      } yield jsonResponse(resp).setStatus(status)
   }
   implicit class RichRequest(val r: Request) extends AnyVal {
     def decode[A: JsonDecoder]: Task[A]           = decodeJsonBody[A](r)
