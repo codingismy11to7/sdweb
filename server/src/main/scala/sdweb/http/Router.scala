@@ -2,6 +2,7 @@ package sdweb
 package http
 
 import sdweb.Authentication.AuthError
+import sdweb.http.HttpModel.LoggedInResponse
 import sdweb.http.Router.{jsonResponse, AuthHeader, CookieSecret, IntPath, RichRequest, SessionCookie, UuidStr}
 import sdweb.{Authentication, Config, FileUtil, RequestProcessor}
 import zio._
@@ -120,7 +121,12 @@ final case class Router(
       getSessionId(r).fold(ZIO.unit)(sessionManager.closeSession) as redirectToApp(r)
 
     case r @ Method.GET -> `base` / "loggedIn" =>
-      hasValidSessionId(r).map(loggedIn => Response.json(s"""{"loggedIn":$loggedIn}"""))
+      currentUser(r)
+        .map {
+          case None        => LoggedInResponse(loggedIn = false, None)
+          case u @ Some(_) => LoggedInResponse(loggedIn = true, u)
+        }
+        .map(jsonResponse(_))
 
     case r @ Method.POST -> `base` / "login" =>
       (if (r.hasContentType(HeaderValues.applicationXWWWFormUrlencoded)) {

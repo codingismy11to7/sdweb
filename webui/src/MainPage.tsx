@@ -21,12 +21,22 @@ import Typography from "@mui/material/Typography";
 import { ReactNode, useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { To, NavigateOptions, Outlet, useNavigate } from "react-router-dom";
+import { AppContext } from "./context";
 import { navigateToLogout } from "./rpc/backend";
+import { User } from "./rpc/models";
 import { useIsDesktop } from "./util/hooks";
 
 const drawerWidth = 240;
 
-export const MainPage = () => {
+type Props = Readonly<{ user: User }>;
+
+export const MainPageWithContext = ({ user }: Props) => (
+  <AppContext.Provider value={{ currentUser: user }}>
+    <MainPage />
+  </AppContext.Provider>
+);
+
+const MainPage = () => {
   const isDesktop = useIsDesktop();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [t] = useTranslation();

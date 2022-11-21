@@ -1,4 +1,4 @@
-import { ChangePassword, ChangePasswordResponse, Generate, GenerateResponse } from "./models";
+import { ChangePassword, ChangePasswordResponse, Generate, GenerateResponse, LoggedInResponse } from "./models";
 
 const BackendUrl = (() => {
   const location = document.location;
@@ -12,11 +12,9 @@ export const imageUrl = (imageId: string, imageIndex: number) => `${gridImageUrl
 
 export const LoginUrl = `${BackendUrl}/login`;
 
-type LoggedIn = Readonly<{ loggedIn: boolean }>;
-
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-export const checkIsLoggedIn = (): Promise<LoggedIn> => {
+export const checkIsLoggedIn = (): Promise<LoggedInResponse> => {
   const tryFetch = () => fetch(`${BackendUrl}/loggedIn`, { method: "GET", credentials: "include" }).then(r => r.json());
   const loop = () =>
     tryFetch().catch(e => {
