@@ -24,6 +24,7 @@ trait Users {
   def savePassword(username: String, hashedPw: String): IO[SQLException, Long]
   def usernameExists(username: String): IO[SQLException, Boolean]
   def delete(username: String): IO[SQLException, Long]
+  def users: IO[SQLException, List[User]]
 }
 
 trait ApiKeys {
@@ -77,6 +78,8 @@ object Persistence {
 
     override def delete(username: String): IO[SQLException, Long] =
       run(getUser(username).delete)
+
+    override val users: IO[SQLException, List[User]] = run(userQuery.sortBy(_.username)).map(_.map(_.toUser))
 
     // API Keys
     override def saveAPIKey(key: String, username: String): IO[SQLException, Long] =
