@@ -22,6 +22,9 @@ final case class Authentication(users: Users, apiKeys: ApiKeys, hasher: Hasher) 
   def createApiKeyFor(username: String): IO[SQLException, String] =
     Random.nextUUID.map(_.toString).tap(apiKeys.saveAPIKey(_, username))
 
+  def adminUpdatePassword(username: String, newPassword: String): IO[SQLException, Long] =
+    users.savePassword(username, hasher.hash(newPassword))
+
   def updatePassword(username: String, oldPassword: String, newPassword: String): IO[AuthError, Unit] = for {
     _ <- ZIO.fail(InvalidCredentials(username)).unlessZIO(isValidUserPass(username, oldPassword))
     _ <- users.savePassword(username, hasher.hash(newPassword)).mapError(toDbError)
