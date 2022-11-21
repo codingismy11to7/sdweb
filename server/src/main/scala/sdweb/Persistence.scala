@@ -22,6 +22,8 @@ trait Users {
   def userIfValidCreds(username: String, hashedPw: String): IO[SQLException, Option[User]]
   def isValid(username: String, hashedPw: String): IO[SQLException, Boolean]
   def savePassword(username: String, hashedPw: String): IO[SQLException, Long]
+  def usernameExists(username: String): IO[SQLException, Boolean]
+  def delete(username: String): IO[SQLException, Long]
 }
 
 trait ApiKeys {
@@ -55,6 +57,8 @@ object Persistence {
     private val userQuery = quote(querySchema[PersistUser]("user"))
 
     // Users
+    private def getUser(username: String) = quote(userQuery.filter(_.username == lift(username)))
+
     override def saveUser(username: String, hashedPw: String): IO[SQLException, Long] =
       run(userQuery.insertValue(lift(PersistUser(username, hashedPw, admin = false))))
 
@@ -66,7 +70,13 @@ object Persistence {
       userIfValidCreds(username, hashedPw).map(_.nonEmpty)
 
     override def savePassword(username: String, hashedPw: String): IO[SQLException, Long] =
-      run(userQuery.filter(_.username == lift(username)).update(_.passwordHash -> lift(hashedPw)))
+      run(getUser(username).update(_.passwordHash -> lift(hashedPw)))
+
+    override def usernameExists(username: String): IO[SQLException, Boolean] =
+      run(getUser(username).size).map(_ > 0)
+
+    override def delete(username: String): IO[SQLException, Long] =
+      run(getUser(username).delete)
 
     // API Keys
     override def saveAPIKey(key: String, username: String): IO[SQLException, Long] =

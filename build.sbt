@@ -7,6 +7,7 @@ ThisBuild / scalafmtOnCompile := true
 (ThisBuild / scalacOptions) ++= Seq("-deprecation")
 
 val V = new {
+  val enumeratum = "1.7.0"
   val logback    = "1.3.4"
   val quill      = "4.6.0"
   val sqlite     = "3.39.3.0"
@@ -23,6 +24,7 @@ lazy val server = project
     name := "sdweb",
     libraryDependencies ++= Seq(
       "ch.qos.logback" % "logback-classic"     % V.logback,
+      "com.beachape"  %% "enumeratum"          % V.enumeratum,
       "dev.zio"       %% "zio"                 % V.zio,
       "dev.zio"       %% "zio-config-magnolia" % V.zioConfig,
       "dev.zio"       %% "zio-config-typesafe" % V.zioConfig,

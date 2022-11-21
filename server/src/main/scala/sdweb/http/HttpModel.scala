@@ -1,5 +1,7 @@
 package sdweb.http
 
+import enumeratum._
+import sdweb.util.JsonEnum
 import zio.json.{DeriveJsonCodec, JsonCodec}
 
 import java.util.UUID
@@ -25,5 +27,26 @@ object HttpModel {
   }
   object ChangePasswordResponse {
     implicit val codec: JsonCodec[ChangePasswordResponse] = DeriveJsonCodec.gen[ChangePasswordResponse]
+  }
+
+  object Admin {
+    final case class CreateUser(username: String)
+    object CreateUser { implicit val codec: JsonCodec[CreateUser] = DeriveJsonCodec.gen[CreateUser] }
+
+    sealed trait CreateUserError extends EnumEntry
+    object CreateUserError extends Enum[CreateUserError] with JsonEnum[CreateUserError] {
+      val values: IndexedSeq[CreateUserError] = findValues
+
+      case object UserExists  extends CreateUserError
+      case object BadUserName extends CreateUserError
+      case object ServerError extends CreateUserError
+    }
+    final case class CreateUserResponse(error: Option[CreateUserError])
+    object CreateUserResponse {
+      implicit val codec: JsonCodec[CreateUserResponse] = DeriveJsonCodec.gen[CreateUserResponse]
+    }
+
+    final case class SetUserPassword(password: String)
+    object SetUserPassword { implicit val codec: JsonCodec[SetUserPassword] = DeriveJsonCodec.gen[SetUserPassword] }
   }
 }
