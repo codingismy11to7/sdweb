@@ -98,11 +98,20 @@ final case class Router(
         auth.adminUpdatePassword(username, sup.password).as(Response.ok)
       }
 
+    case r @ Method.POST -> `base` / "api" / "admin" / "users" / username / "admin" =>
+      r.handle[HttpModel.Admin.SetUserAdmin] { sua =>
+        currentAdminUser(r) flatMap {
+          case None                              => ZIO.fail(HttpError.Unauthorized())
+          case Some(u) if u.username == username => textResponse("Can't modify yourself", Status.BadRequest)
+          case Some(_)                           => users.setAdmin(username, sua.admin).as(Response.ok)
+        }
+      }
+
     case r @ Method.DELETE -> `base` / "api" / "admin" / "users" / username =>
       currentAdminUser(r) flatMap {
         case None                              => ZIO.fail(HttpError.Unauthorized())
         case Some(u) if u.username == username => textResponse("Can't delete yourself", Status.BadRequest)
-        case Some(u)                           => validateAdmin(r) *> users.delete(u.username).as(Response.ok)
+        case Some(_)                           => users.delete(username).as(Response.ok)
       }
   }
 

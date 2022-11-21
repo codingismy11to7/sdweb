@@ -22,6 +22,7 @@ trait Users {
   def userIfValidCreds(username: String, hashedPw: String): IO[SQLException, Option[User]]
   def isValid(username: String, hashedPw: String): IO[SQLException, Boolean]
   def savePassword(username: String, hashedPw: String): IO[SQLException, Long]
+  def setAdmin(username: String, admin: Boolean): IO[SQLException, Long]
   def usernameExists(username: String): IO[SQLException, Boolean]
   def delete(username: String): IO[SQLException, Long]
   def users: IO[SQLException, List[User]]
@@ -72,6 +73,9 @@ object Persistence {
 
     override def savePassword(username: String, hashedPw: String): IO[SQLException, Long] =
       run(getUser(username).update(_.passwordHash -> lift(hashedPw)))
+
+    override def setAdmin(username: String, admin: Boolean): IO[SQLException, Long] =
+      run(getUser(username).update(_.admin -> lift(admin)))
 
     override def usernameExists(username: String): IO[SQLException, Boolean] =
       run(getUser(username).size).map(_ > 0)

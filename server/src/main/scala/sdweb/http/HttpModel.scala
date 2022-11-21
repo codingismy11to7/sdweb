@@ -48,5 +48,8 @@ object HttpModel {
 
     final case class SetUserPassword(password: String)
     object SetUserPassword { implicit val codec: JsonCodec[SetUserPassword] = DeriveJsonCodec.gen[SetUserPassword] }
+
+    final case class SetUserAdmin(admin: Boolean)
+    object SetUserAdmin { implicit val codec: JsonCodec[SetUserAdmin] = DeriveJsonCodec.gen[SetUserAdmin] }
   }
 }
