@@ -1,12 +1,16 @@
 package sdweb.http
 
 import enumeratum._
+import sdweb.model.User
 import sdweb.util.JsonEnum
 import zio.json.{DeriveJsonCodec, JsonCodec}
 
 import java.util.UUID
 
 object HttpModel {
+  final case class LoggedInResponse(loggedIn: Boolean, user: Option[User])
+  object LoggedInResponse { implicit val codec: JsonCodec[LoggedInResponse] = DeriveJsonCodec.gen[LoggedInResponse] }
+
   final case class ResetApiKey(username: String, password: String)
   object ResetApiKey { implicit val codec: JsonCodec[ResetApiKey] = DeriveJsonCodec.gen[ResetApiKey] }
 

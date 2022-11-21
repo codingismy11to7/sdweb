@@ -1,3 +1,6 @@
+export type User = Readonly<{ username: string; admin: boolean }>;
+export type LoggedInResponse = Readonly<{ loggedIn: boolean; user?: User }>;
+
 export type ResetApiKey = Readonly<{ username: string; password: string }>;
 export type ResetApiKeyResponse = Readonly<{ apiKey: string }>;
 

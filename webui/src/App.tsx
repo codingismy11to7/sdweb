@@ -6,8 +6,10 @@ import { useEffect, useState } from "react";
 import { I18nextProvider } from "react-i18next";
 import i18n from "./i18n/i18n";
 import Login from "./Login";
-import { MainPage } from "./MainPage";
+import { MainPageWithContext } from "./MainPage";
 import { checkIsLoggedIn } from "./rpc/backend";
+import { LoggedInResponse } from "./rpc/models";
+import { fold, isUndefined } from "./util/undefOr";
 
 const theme = createTheme();
 
@@ -18,16 +20,25 @@ const Loading = () => (
 );
 
 export const App = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean>();
+  const [loggedIn, setLoggedIn] = useState<LoggedInResponse>();
+  const loggedInUser = loggedIn?.user;
 
   useEffect(() => {
-    checkIsLoggedIn().then(li => setIsLoggedIn(li.loggedIn));
+    checkIsLoggedIn().then(li => setLoggedIn(li));
   }, []);
 
   return (
     <I18nextProvider i18n={i18n}>
       <ThemeProvider theme={theme}>
-        <div>{isLoggedIn === undefined ? <Loading /> : isLoggedIn ? <MainPage /> : <Login />}</div>
+        {isUndefined(loggedIn) ? (
+          <Loading />
+        ) : (
+          fold(
+            loggedInUser,
+            () => <Login />,
+            user => <MainPageWithContext user={user} />,
+          )
+        )}
       </ThemeProvider>
     </I18nextProvider>
   );
