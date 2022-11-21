@@ -13,3 +13,5 @@ export type CreateUser = Readonly<{ username: string }>;
 export type CreateUserResponse = Readonly<{ error?: "UserExists" | "BadUserName" | "ServerError" }>;
 
 export type SetUserPassword = Readonly<{ password: string }>;
+
+export type SetUserAdmin = Readonly<{ admin: boolean }>;
