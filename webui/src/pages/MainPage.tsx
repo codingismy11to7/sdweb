@@ -19,17 +19,19 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import { ReactNode, useCallback, useEffect, useMemo, useState } from "react";
+import { lazy, ReactNode, Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { To, NavigateOptions, Outlet, useNavigate, createBrowserRouter, RouterProvider } from "react-router-dom";
+import { Loading } from "../components/Loading";
 import { AppContext, useIsAdminUser } from "../context";
 import { navigateToLogout } from "../rpc/backend";
 import { User } from "../rpc/models";
 import { useIsDesktop } from "../util/hooks";
-import Administration from "./Administration";
 import { Api } from "./Api";
 import ChangePassword from "./ChangePassword";
 import { Search } from "./Search";
+
+const Administration = lazy(() => import("./Administration"));
 
 const drawerWidth = 240;
 
@@ -141,7 +143,9 @@ const MainPage = () => {
       </Drawer>
       <Box component="main" sx={{ flexGrow: 1, p: isDesktop ? 3 : 0, width: "100%" }}>
         <Toolbar />
-        <Outlet />
+        <Suspense fallback={<Loading />}>
+          <Outlet />
+        </Suspense>
       </Box>
     </Box>
   );

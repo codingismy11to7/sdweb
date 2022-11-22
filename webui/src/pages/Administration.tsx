@@ -1,6 +1,6 @@
-import { Box, Button } from "@mui/material";
+import { Button, Container } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { fetchUsers } from "../rpc/backend";
 import { UsersResponse } from "../rpc/models";
 import UserForm from "./UserForm";
@@ -39,8 +39,8 @@ const Administration = () => {
   };
 
   return (
-    <Box sx={{ height: 400, width: "100%" }}>
-      <Button size="small" onClick={handleAddUser}>
+    <Container maxWidth="sm" style={{ height: 375 }}>
+      <Button size="small" onClick={handleAddUser} variant="contained">
         Add a user
       </Button>
       <DataGrid
@@ -57,7 +57,7 @@ const Administration = () => {
         disableSelectionOnClick
       />
       <UserForm open={modalOpen} onClose={() => doUserFetch()} name={username} admin={admin} />
-    </Box>
+    </Container>
   );
 };
 
