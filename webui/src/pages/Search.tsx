@@ -8,7 +8,9 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { Key } from "ts-key-enum";
 import { fetchRequest, gridImageUrl, imageSearch } from "../rpc/backend";
+import { Generate } from "../rpc/models";
 import { usePrevious } from "../util/hooks";
+import { isDefined } from "../util/undefOr";
 
 const ImageViewer = lazy(() => import("../components/ImageViewer"));
 
@@ -29,6 +31,7 @@ export const Search = () => {
   const params = useParams();
   const imageId = params.imageId;
   const [generating, setGenerating] = useState(false);
+  const [fetchedRequest, setFetchedRequest] = useState<Generate>();
   const [searchText, setSearchText] = useState("");
   const [notFound, setNotFound] = useState<boolean>();
   const navigate = useNavigate();
@@ -49,10 +52,13 @@ export const Search = () => {
 
   useEffect(() => {
     if (imageId) {
+      setFetchedRequest(undefined);
+      setNotFound(undefined);
       fetchRequest(
         imageId,
         frr => {
           console.log("found request");
+          setFetchedRequest(frr);
           setSearchText(frr.prompt);
           setNotFound(false);
         },
@@ -96,9 +102,9 @@ export const Search = () => {
       ) : (
         <></>
       )}
-      {imageId !== undefined && imageId && notFound !== undefined && !notFound && !generating ? (
+      {!!imageId && isDefined(notFound) && !notFound && !generating && isDefined(fetchedRequest) ? (
         <Suspense>
-          <ImageViewer images={imageList(imageId)} />
+          <ImageViewer images={imageList(imageId)} prompt={fetchedRequest.prompt} />
         </Suspense>
       ) : (
         <></>
