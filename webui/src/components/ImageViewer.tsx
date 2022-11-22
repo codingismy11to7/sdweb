@@ -6,11 +6,12 @@ import ImageGallery, { ReactImageGalleryItem } from "react-image-gallery";
 import { useIsDesktop } from "../util/hooks";
 
 type Props = Readonly<{
-  searchText?: string;
+  prompt: string;
+  label?: string;
   images: readonly ReactImageGalleryItem[];
 }>;
 
-const ImageViewer = ({ searchText, images }: Props) => {
+const ImageViewer = ({ prompt, label, images }: Props) => {
   const isDesktop = useIsDesktop();
   const galleryRef = useRef<ImageGallery>(null);
   const [alertOpen, setAlertOpen] = useState(false);
@@ -27,13 +28,13 @@ const ImageViewer = ({ searchText, images }: Props) => {
   const handleShareClick = () => {
     if (galleryRef.current)
       navigator.clipboard
-        .writeText(images[galleryRef.current.getCurrentIndex()].original)
+        .writeText(`${prompt}\n${images[galleryRef.current.getCurrentIndex()].original}`)
         .then(() => setAlertOpen(true));
   };
 
   return (
     <Container maxWidth={"md"} sx={{ p: isDesktop ? 1 : 0 }}>
-      {!!searchText ? <Typography align={"center"}>{searchText}</Typography> : <></>}
+      {!!label ? <Typography align={"center"}>{label}</Typography> : <></>}
       <ImageGallery
         ref={galleryRef}
         items={images}
