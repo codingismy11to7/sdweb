@@ -102,6 +102,7 @@ const MainPage = () => {
           <List>
             {navItem(t("common.changepw"), "password", <KeyIcon />)}
             {menuItem(t("common.logout"), navigateToLogout, <LogoutIcon />)}
+            {navItem(t("admin.administration"), "administration", <KeyIcon />)}
           </List>
         </Box>
       </Drawer>

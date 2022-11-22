@@ -12,9 +12,12 @@ export type ChangePasswordResponse = Readonly<{ error?: string }>;
 
 // Admin stuff
 
-export type CreateUser = Readonly<{ username: string }>;
+export type CreateUser = Readonly<{ username: string; password: string }>;
 export type CreateUserResponse = Readonly<{ error?: "UserExists" | "BadUserName" | "ServerError" }>;
 
 export type SetUserPassword = Readonly<{ password: string }>;
 
 export type SetUserAdmin = Readonly<{ admin: boolean }>;
+
+export type User = Readonly<{ username: string; admin: boolean }>;
+export type UsersResponse = readonly User[];

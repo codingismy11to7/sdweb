@@ -28,7 +28,10 @@ const Login = () => {
     <Container maxWidth="sm">
       <Dialog open={!!dialogText} onClose={() => setDialogText("")}>
         <DialogContent>
-          <DialogContentText>{dialogText} Contact me.</DialogContentText>
+          <DialogContentText>
+            {dialogText}
+            {t("common.contactme")}
+          </DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDialogText("")}>Close</Button>
@@ -74,13 +77,13 @@ const Login = () => {
           <Grid item>
             <Grid container spacing={1} style={{ textAlign: "center" }}>
               <Grid item xs={6}>
-                <Link component="button" variant="body2" onClick={() => setDialogText("That sucks.")}>
-                  Forgot Password
+                <Link component="button" variant="body2" onClick={() => setDialogText(_ => t("common.sucks"))}>
+                  {t("common.forgotpw")}
                 </Link>
               </Grid>
               <Grid item xs={6}>
-                <Link component="button" variant="body2" onClick={() => setDialogText("You can't.")}>
-                  Create Account
+                <Link component="button" variant="body2" onClick={() => setDialogText(_ => t("common.cant"))}>
+                  {t("common.createacct")}
                 </Link>
               </Grid>
             </Grid>

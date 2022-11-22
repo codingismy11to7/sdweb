@@ -34,7 +34,7 @@ object HttpModel {
   }
 
   object Admin {
-    final case class CreateUser(username: String)
+    final case class CreateUser(username: String, password: String)
     object CreateUser { implicit val codec: JsonCodec[CreateUser] = DeriveJsonCodec.gen[CreateUser] }
 
     sealed trait CreateUserError extends EnumEntry

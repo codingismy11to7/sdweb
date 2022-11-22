@@ -16,6 +16,19 @@
     "currentpw": "Current $t(password)",
     "newpw": "New $t(password)",
     "confirmpw": "Confirm $t(password)",
-    "changepw": "Change $t(password)"
+    "changepw": "Change $t(password)",
+    "forgotpw": "Forgot $t(password)",
+    "createacct": "Create Account",
+    "cant": "You can't.",
+    "sucks": "That sucks.",
+    "contactme": "Contact me."
+  },
+  "admin": {
+    "addupdate": "Add/Update User",
+    "administration": "Administration",
+    "administrator": "Administrator",
+    "add": "Add",
+    "update": "Update",
+    "delete": "Delete"
   }
 }
