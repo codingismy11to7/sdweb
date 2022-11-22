@@ -7,6 +7,7 @@ import sdweb.http.Router.{jsonResponse, AuthHeader, CookieSecret, IntPath, RichR
 import sdweb.{Authentication, Config, FileUtil, RequestProcessor}
 import zio._
 import zio.http._
+import zio.http.middleware.Cors.CorsConfig
 import zio.http.model._
 import zio.json._
 import zio.nio.file.Files
@@ -83,6 +84,7 @@ final case class Router(
         (for {
           _ <- ZIO.fail(UserExists).whenZIO(users.usernameExists(username).flatMapError(excToCUE))
           _ <- ZIO.fail(BadUserName).when(username.isEmpty)
+          _ <- auth.adminAddUser(cu.username, cu.password).flatMapError(excToCUE)
         } yield HttpModel.Admin.CreateUserResponse(None) -> Status.Ok).catchAll { e =>
           ZIO.succeed {
             HttpModel.Admin.CreateUserResponse(Some(e)) -> (e match {
@@ -229,7 +231,9 @@ final case class Router(
   }
 
   val routes: RHttpApp[Any] = (sessionRoutes ++ nonAdminApiRoutes ++ adminApiRoutes ++ fileRoutes)
-    .catchSome { case e: HttpError => Http succeed Response.fromHttpError(e) } @@ Middleware.cors()
+    .catchSome { case e: HttpError => Http succeed Response.fromHttpError(e) } @@ Middleware.cors(
+    CorsConfig(allowedMethods = Some(Set(Method.GET, Method.POST, Method.DELETE, Method.PUT))),
+  )
 }
 
 object Router {

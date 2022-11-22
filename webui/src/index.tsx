@@ -4,6 +4,7 @@ import "./index.css";
 import "react-image-gallery/styles/css/image-gallery.css";
 import { createBrowserRouter, RouterProvider, useNavigate } from "react-router-dom";
 import { App } from "./App";
+import Administration from "./pages/Administration";
 import { Api } from "./pages/Api";
 import ChangePassword from "./pages/ChangePassword";
 import { Search } from "./pages/Search";
@@ -25,6 +26,7 @@ const router = createBrowserRouter([
       { path: "search/:imageId", element: <Search /> },
       { path: "api", element: <Api /> },
       { path: "password", element: <ChangePassword /> },
+      { path: "administration/*", element: <Administration /> },
     ],
   },
 ]);
