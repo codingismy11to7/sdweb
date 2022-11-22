@@ -1,40 +1,14 @@
-import React, { useEffect } from "react";
+import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import "react-image-gallery/styles/css/image-gallery.css";
-import { createBrowserRouter, RouterProvider, useNavigate } from "react-router-dom";
 import { App } from "./App";
-import Administration from "./pages/Administration";
-import { Api } from "./pages/Api";
-import ChangePassword from "./pages/ChangePassword";
-import { Search } from "./pages/Search";
 import reportWebVitals from "./reportWebVitals";
-
-const Redirect = () => {
-  const nav = useNavigate();
-  useEffect(() => nav("/sd/search", { replace: true }), [nav]);
-  return <></>;
-};
-const router = createBrowserRouter([
-  { path: "/", element: <App />, children: [{ index: true, element: <Redirect /> }] },
-  {
-    path: "/sd",
-    element: <App />,
-    children: [
-      { index: true, element: <Redirect /> },
-      { path: "search", element: <Search /> },
-      { path: "search/:imageId", element: <Search /> },
-      { path: "api", element: <Api /> },
-      { path: "password", element: <ChangePassword /> },
-      { path: "administration/*", element: <Administration /> },
-    ],
-  },
-]);
 
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 root.render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <App />
   </React.StrictMode>,
 );
 

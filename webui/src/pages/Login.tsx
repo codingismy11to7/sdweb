@@ -8,7 +8,7 @@ import TextField from "@mui/material/TextField";
 import { useCallback, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Key } from "ts-key-enum";
-import { LoginUrl } from "./rpc/backend";
+import { LoginUrl } from "../rpc/backend";
 
 const Login = () => {
   const theme = useTheme();

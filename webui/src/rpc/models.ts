@@ -19,5 +19,4 @@ export type SetUserPassword = Readonly<{ password: string }>;
 
 export type SetUserAdmin = Readonly<{ admin: boolean }>;
 
-export type User = Readonly<{ username: string; admin: boolean }>;
 export type UsersResponse = readonly User[];
