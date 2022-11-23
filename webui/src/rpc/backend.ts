@@ -126,7 +126,7 @@ export const setUserPasswordRequest = (
   onError?: (error: Response) => void,
 ): Promise<void> => backendPostRequest(`/api/admin/users/${username}/password`, req, onSuccess, onError);
 
-export const setDeleteUserRequest = (
+export const sendDeleteUserRequest = (
   username: string,
   onSuccess: (res: Response) => void,
   onError?: (error: Response) => void,

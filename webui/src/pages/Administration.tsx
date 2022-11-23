@@ -1,11 +1,12 @@
 import { Button, Container } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import UserForm from "../components/UserForm";
 import { fetchUsers } from "../rpc/backend";
-import { UsersResponse } from "../rpc/models";
-import UserForm from "./UserForm";
+import { User, UsersResponse } from "../rpc/models";
+import { map } from "../util/undefOr";
 
-const columns: GridColDef[] = [
+const columns: Array<GridColDef<User, User>> = [
   { field: "username", headerName: "User", width: 150 },
   { field: "admin", headerName: "Is Admin", width: 150, type: "boolean" },
 ];
@@ -14,41 +15,47 @@ const Administration = () => {
   const [notFetched, setNotFetched] = useState(true);
   const [users, setUsers] = useState<UsersResponse>();
   const [modalOpen, setModalOpen] = useState(false);
-  const [username, setUsername] = useState("");
-  const [admin, setAdmin] = useState(false);
+  const [editingUsername, setEditingUsername] = useState<string>();
 
-  const doUserFetch = () => {
+  const doUserFetch = useCallback(() => {
     fetchUsers(
       res => setUsers(res),
       err => console.error(err),
-    )
-      .then(() => setNotFetched(false))
-      .then(() => setModalOpen(false));
-  };
+    ).then(() => setNotFetched(false));
+  }, []);
 
   useEffect(() => {
     if (notFetched) {
       doUserFetch();
     }
-  }, [users, notFetched]);
+  }, [doUserFetch, notFetched]);
 
   const handleAddUser = () => {
-    setUsername("");
-    setAdmin(false);
+    setEditingUsername(undefined);
     setModalOpen(true);
   };
+
+  const closeModal = useCallback(() => {
+    setEditingUsername(undefined);
+    setModalOpen(false);
+    doUserFetch();
+  }, [doUserFetch]);
+
+  const editingUser = useMemo(
+    () => map(editingUsername, username => users?.find(u => u.username === username)),
+    [editingUsername, users],
+  );
 
   return (
     <Container maxWidth="sm" style={{ height: 375 }}>
       <Button size="small" onClick={handleAddUser} variant="contained">
         Add a user
       </Button>
-      <DataGrid
+      <DataGrid<User>
         getRowId={r => r.username}
         rows={users ?? []}
         onRowClick={r => {
-          setUsername(r.row.username as string);
-          setAdmin(r.row.admin as boolean);
+          setEditingUsername(r.row.username as string);
           setModalOpen(true);
         }}
         columns={columns}
@@ -56,7 +63,7 @@ const Administration = () => {
         rowsPerPageOptions={[5]}
         disableSelectionOnClick
       />
-      <UserForm open={modalOpen} onClose={() => doUserFetch()} name={username} admin={admin} />
+      <UserForm open={modalOpen} onClose={closeModal} editingUser={editingUser} />
     </Container>
   );
 };
