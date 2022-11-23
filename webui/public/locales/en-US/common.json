@@ -1,5 +1,7 @@
 {
   "common": {
+    "ok": "OK",
+    "cancel": "Cancel",
     "title": "Stable Diffusion",
     "github": "GitHub Repository",
     "search": "Search",
@@ -11,12 +13,11 @@
     "password": "Password",
     "searchtext": "Description of image",
     "notfound": "Request not found",
-    "linkcopied":  "Link copied to clipboard!",
+    "linkcopied": "Link copied to clipboard!",
     "pwchanged": "$t(password) changed successfully",
     "currentpw": "Current $t(password)",
     "newpw": "New $t(password)",
     "confirmpw": "Confirm $t(password)",
-    "changepw": "Change $t(password)",
     "forgotpw": "Forgot $t(password)",
     "createacct": "Create Account",
     "cant": "You can't.",
@@ -28,6 +29,7 @@
     "administration": "Administration",
     "administrator": "Administrator",
     "add": "Add",
+    "confirmdelete": "Are you sure you want to delete {{username}}?",
     "update": "Update",
     "delete": "Delete"
   }

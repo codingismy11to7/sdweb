@@ -69,6 +69,9 @@ final case class Router(
     body = Body.fromStream(ZStream.fromFile((config.http.clientDirPath / "index.html").toFile)),
   )
 
+  private def emptyOutput                       = Response.json("{}")
+  private def emptyOutputStatus(status: Status) = emptyOutput.setStatus(status)
+
   private def redirectToApp(r: Request) = Response.seeOther(r.referer.getOrElse(config.http.publicUrl))
 
   private def textResponse(msg: String, status: Status = Status.Ok) = ZIO.succeed(Response.text(msg).setStatus(status))
@@ -98,7 +101,7 @@ final case class Router(
 
     case r @ Method.POST -> `base` / "api" / "admin" / "users" / username / "password" =>
       validateAdmin(r) *> r.handle[HttpModel.Admin.SetUserPassword] { sup =>
-        auth.adminUpdatePassword(username, sup.password).as(Response.ok)
+        auth.adminUpdatePassword(username, sup.password).as(emptyOutput)
       }
 
     case r @ Method.POST -> `base` / "api" / "admin" / "users" / username / "admin" =>
@@ -106,7 +109,7 @@ final case class Router(
         currentAdminUser(r) flatMap {
           case None                              => ZIO.fail(HttpError.Unauthorized())
           case Some(u) if u.username == username => textResponse("Can't modify yourself", Status.BadRequest)
-          case Some(_)                           => users.setAdmin(username, sua.admin).as(Response.ok)
+          case Some(_)                           => users.setAdmin(username, sua.admin).as(emptyOutput)
         }
       }
 
@@ -114,7 +117,7 @@ final case class Router(
       currentAdminUser(r) flatMap {
         case None                              => ZIO.fail(HttpError.Unauthorized())
         case Some(u) if u.username == username => textResponse("Can't delete yourself", Status.BadRequest)
-        case Some(_)                           => users.delete(username).as(Response.ok)
+        case Some(_)                           => users.delete(username).as(emptyOutput)
       }
   }
 
