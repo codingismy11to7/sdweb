@@ -82,7 +82,8 @@ const UserForm = ({ open, onClose, editingUser }: Props) => {
     foreach(existingName, username => sendDeleteUserRequest(username, () => {}).then(() => doCloseForm()));
   }, [doCloseForm, existingName]);
 
-  const enabled = updatePassword && !!password.length && !!confirmPass.length && password === confirmPass;
+  const enabled =
+    (updatePassword || !editMode) && !!password.length && !!confirmPass.length && password === confirmPass;
 
   return (
     <Dialog onClose={doCloseForm} open={open} fullWidth>
