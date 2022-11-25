@@ -1,9 +1,12 @@
 package sdweb
 
-import zio.{IO, ZLayer}
-import zio.process.{Command, CommandError}
+import zio.ZIO.systemWith
+import zio.process.{Command, CommandError, ProcessOutput}
+import zio.{IO, ZIO, ZLayer}
 
-final case class SDRunner(config: Config) {
+import java.io.File
+
+final case class SDRunner(config: Config, nul: File) {
 
   def runSD(r: Request): IO[CommandError, Unit] =
     Command(
@@ -20,12 +23,25 @@ final case class SDRunner(config: Config) {
       "--prompt",
       r.prompt,
       "--plms",
-    ).inheritIO
+    ).stdout(ProcessOutput.FileRedirect(nul))
+      .stderr(ProcessOutput.FileRedirect(nul))
       .workingDirectory(config.stableDiffusionDir)
       .successfulExitCode
       .unit
 }
 
 object SDRunner {
-  val live: ZLayer[Config, Nothing, SDRunner] = ZLayer.fromFunction(SDRunner(_))
+  private def noOsName(ot: Option[Throwable]) = ot match {
+    case Some(t) => t
+    case None    => new Throwable("won't happen")
+  }
+
+  val live: ZLayer[Config, Throwable, SDRunner] = ZLayer {
+    for {
+      config    <- ZIO.service[Config]
+      isWindows <- systemWith(_.property("os.name")).some.mapBoth(noOsName, _.startsWith("Windows"))
+      nullOutput = if (isWindows) "NUL" else "/dev/null"
+      nullFile   = new File(nullOutput)
+    } yield SDRunner(config, nullFile)
+  }
 }

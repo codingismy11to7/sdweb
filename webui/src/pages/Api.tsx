@@ -45,12 +45,9 @@ export const Api = () => (
                 Important: under normal circumstances, do <i>not</i> specify a custom seed.
               </b>
             </div>
-            <div>
-              Use the <code>async</code> request parameter to return the imageId before the image is done generating.
-            </div>
           </CardContent>
           <CardContent>
-            {codeBlock(<>POST: /&lt;base&gt;/api/generate[?async=true]</>)}
+            {codeBlock(<>POST: /&lt;base&gt;/api/generate</>)}
             {codeBlock(<>Body:</>)}
             {jsonBlock({
               prompt: "a unicorn getting mauled by a hyena",

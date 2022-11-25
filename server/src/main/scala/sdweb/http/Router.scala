@@ -38,8 +38,6 @@ final case class Router(
 
   private def userForSessionId(r: Request) = userAndSessionId(r).map(_.map(_._1))
 
-  private def hasValidSessionId(r: Request) = userForSessionId(r).map(_.isDefined)
-
   private def currentUser(r: Request) = r.headerValue(AuthHeader) match {
     case Some(token) => auth.userFor(token)
     case None        => userForSessionId(r)
@@ -48,7 +46,7 @@ final case class Router(
   private def currentAdminUser(r: Request) = currentUser(r).map(_.filter(_.admin))
 
   private def validateAuth(r: Request) =
-    ZIO.fail(HttpError.Unauthorized()).unlessZIO(currentUser(r).map(_.isDefined))
+    currentUser(r).someOrFail(HttpError.Unauthorized())
 
   private def validateAdmin(r: Request) =
     ZIO.fail(HttpError.Unauthorized()).unlessZIO(currentAdminUser(r).map(_.isDefined))
@@ -69,8 +67,7 @@ final case class Router(
     body = Body.fromStream(ZStream.fromFile((config.http.clientDirPath / "index.html").toFile)),
   )
 
-  private def emptyOutput                       = Response.json("{}")
-  private def emptyOutputStatus(status: Status) = emptyOutput.setStatus(status)
+  private def emptyOutput = Response.json("{}")
 
   private def redirectToApp(r: Request) = Response.seeOther(r.referer.getOrElse(config.http.publicUrl))
 
@@ -180,14 +177,16 @@ final case class Router(
       }
 
     case r @ Method.POST -> `base` / "api" / "generate" =>
-      validateAuth(r) *> r.handleJson { (g: HttpModel.Generate) =>
-        val async = r.url.queryParams.get("async").flatMap(_.head.toBooleanOption).getOrElse(false)
-        for {
-          _   <- ZIO.logInfo(s"generate request for ${g.prompt}, async=$async")
-          req <- sdweb.Request.create(g.prompt, g.seed).orElseFail(HttpError.BadRequest())
-          process = proc.processRequest(req)
-          _ <- if (async) process.forkDaemon else process
-        } yield HttpModel.GenerateResponse(req.id)
+      validateAuth(r) flatMap { user =>
+        r.handleJson { (g: HttpModel.Generate) =>
+          for {
+            reqStr <- ZIO.succeed(s"generate request for '${g.prompt}' by ${user.username}")
+            _      <- ZIO.logInfo(reqStr)
+            req    <- sdweb.Request.create(g.prompt, g.seed).orElseFail(HttpError.BadRequest())
+            _      <- proc.processRequest(req)
+            _      <- ZIO.logInfo(s"${reqStr} complete")
+          } yield HttpModel.GenerateResponse(req.id)
+        }
       }
 
     case r @ Method.GET -> `base` / "api" / "prompt" / UuidStr(imageId) =>

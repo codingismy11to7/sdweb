@@ -89,10 +89,8 @@ const backendDeleteRequest = <T, R>(
   onUnrecoverableError?: (error: any) => void,
 ) => backendRequest(suffix, { method: "DELETE", body: JSON.stringify(req) }, onSuccess, onError, onUnrecoverableError);
 
-export const imageSearch = (prompt: string, onSuccess: (gr: GenerateResponse) => void, async = false) =>
-  Promise.resolve("/api/generate" + (async ? "?async=true" : "")).then(url =>
-    backendPostRequest(url, { prompt }, onSuccess),
-  );
+export const imageSearch = (prompt: string, onSuccess: (gr: GenerateResponse) => void) =>
+  Promise.resolve("/api/generate").then(url => backendPostRequest(url, { prompt }, onSuccess));
 
 export const fetchRequest = (imageId: string, onSuccess: (frr: Generate) => void, onError: (r: Response) => void) =>
   backendGetRequest(`/api/prompt/${imageId}`, onSuccess, onError);
