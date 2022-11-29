@@ -47,11 +47,12 @@ const Administration = () => {
   );
 
   return (
-    <Container maxWidth="sm" style={{ height: 375 }}>
+    <Container maxWidth="sm" style={{ height: 375, marginTop: "5px" }}>
       <Button size="small" onClick={handleAddUser} variant="contained">
         Add a user
       </Button>
       <DataGrid<User>
+        style={{ marginTop: "5px" }}
         getRowId={r => r.username}
         rows={users ?? []}
         onRowClick={r => {
