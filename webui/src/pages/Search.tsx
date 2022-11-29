@@ -1,12 +1,12 @@
 import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturing";
 import { Alert, Fab } from "@mui/material";
 import Backdrop from "@mui/material/Backdrop";
-import CircularProgress from "@mui/material/CircularProgress";
 import TextField from "@mui/material/TextField";
 import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { Key } from "ts-key-enum";
+import ReelToReel from "../components/spinner/ReelToReel";
 import { fetchRequest, gridImageUrl, imageSearch } from "../rpc/backend";
 import { Generate } from "../rpc/models";
 import { usePrevious } from "../util/hooks";
@@ -75,9 +75,11 @@ export const Search = () => {
   return (
     <>
       <Backdrop sx={{ color: "text.primary", zIndex: theme => theme.zIndex.drawer + 1 }} open={generating}>
-        <CircularProgress color="inherit" />
+        <ReelToReel />
       </Backdrop>
-      <div style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
+      <div
+        style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "center", margin: "5px" }}
+      >
         <TextField
           label={t("common.searchtext")}
           value={searchText}
