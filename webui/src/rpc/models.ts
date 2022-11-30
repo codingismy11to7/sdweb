@@ -1,4 +1,5 @@
 export type User = Readonly<{ username: string; admin: boolean }>;
+export type Request = Readonly<{ id: string; prompt: string; seed?: number; modTime: number }>;
 export type LoggedInResponse = Readonly<{ loggedIn: boolean; user?: User }>;
 
 export type ResetApiKey = Readonly<{ username: string; password: string }>;
@@ -20,3 +21,5 @@ export type SetUserPassword = Readonly<{ password: string }>;
 export type SetUserAdmin = Readonly<{ admin: boolean }>;
 
 export type UsersResponse = readonly User[];
+
+export type RequestsResponse = readonly Request[];

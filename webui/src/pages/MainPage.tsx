@@ -17,6 +17,7 @@ import { User } from "../rpc/models";
 import { useIsDesktop } from "../util/hooks";
 import { Api } from "./Api";
 import ChangePassword from "./ChangePassword";
+import RequestsViewer from "./RequestsViewer";
 import { Search } from "./Search";
 
 const Administration = lazy(() => import("./Administration"));
@@ -38,7 +39,14 @@ const createRouter = (admin: boolean) =>
         { path: "search/:imageId", element: <Search /> },
         { path: "api", element: <Api /> },
         { path: "password", element: <ChangePassword /> },
-      ].concat(admin ? [{ path: "administration/*", element: <Administration /> }] : []),
+      ].concat(
+        admin
+          ? [
+              { path: "administration/*", element: <Administration /> },
+              { path: "requests", element: <RequestsViewer /> },
+            ]
+          : [],
+      ),
     },
   ]);
 

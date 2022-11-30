@@ -2,6 +2,7 @@ import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import ApiIcon from "@mui/icons-material/Api";
 import KeyIcon from "@mui/icons-material/Key";
 import LogoutIcon from "@mui/icons-material/Logout";
+import PreviewIcon from "@mui/icons-material/Preview";
 import SearchIcon from "@mui/icons-material/Search";
 import { Drawer } from "@mui/material";
 import Box from "@mui/material/Box";
@@ -69,6 +70,7 @@ export const NavigationSidebar: FC<Props> = ({ drawerOpen, onClose }) => {
         <List>
           {navItem(t("common.changepw"), "password", <KeyIcon />)}
           {isAdminUser ? navItem(t("admin.administration"), "administration", <AdminPanelSettingsIcon />) : <></>}
+          {isAdminUser ? navItem(t("admin.requests"), "requests", <PreviewIcon />) : <></>}
         </List>
         <Divider />
         <List>{menuItem(t("common.logout"), navigateToLogout, <LogoutIcon />)}</List>

@@ -74,6 +74,9 @@ final case class Router(
   private def textResponse(msg: String, status: Status = Status.Ok) = ZIO.succeed(Response.text(msg).setStatus(status))
 
   private val adminApiRoutes = Http.collectZIO[Request] {
+    case r @ Method.GET -> `base` / "api" / "admin" / "requests" =>
+      validateAdmin(r) *> requests.finishedRequests.map(jsonResponse(_))
+
     case r @ Method.GET -> `base` / "api" / "admin" / "users" => validateAdmin(r) *> users.users.map(jsonResponse(_))
 
     case r @ Method.PUT -> `base` / "api" / "admin" / "users" =>
@@ -184,7 +187,7 @@ final case class Router(
             _      <- ZIO.logInfo(reqStr)
             req    <- sdweb.Request.create(g.prompt, g.seed).orElseFail(HttpError.BadRequest())
             _      <- proc.processRequest(req)
-            _      <- ZIO.logInfo(s"${reqStr} complete")
+            _      <- ZIO.logInfo(s"$reqStr complete")
           } yield HttpModel.GenerateResponse(req.id)
         }
       }
