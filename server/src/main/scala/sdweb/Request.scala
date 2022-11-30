@@ -1,6 +1,7 @@
 package sdweb
 
-import zio.{Clock, IO, UIO, ZIO}
+import zio.json.{DeriveJsonCodec, JsonCodec}
+import zio.{Clock, IO, ZIO}
 
 import java.io.{ByteArrayOutputStream, DataOutputStream}
 import java.util.UUID
@@ -8,6 +9,7 @@ import java.util.UUID
 final case class Request(id: UUID, prompt: String, seed: Option[Int], modTime: Long)
 
 object Request {
+  implicit val codec: JsonCodec[Request] = DeriveJsonCodec.gen[Request]
   sealed trait Error
   case object EmptyPrompt extends Error
 

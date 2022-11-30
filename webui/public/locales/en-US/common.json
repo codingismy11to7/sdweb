@@ -31,6 +31,7 @@
     "add": "Add",
     "confirmdelete": "Are you sure you want to delete {{username}}?",
     "update": "Update",
-    "delete": "Delete"
+    "delete": "Delete",
+    "requests": "Requests"
   }
 }

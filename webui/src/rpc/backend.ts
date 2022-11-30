@@ -6,6 +6,7 @@ import {
   Generate,
   GenerateResponse,
   LoggedInResponse,
+  RequestsResponse,
   SetUserAdmin,
   SetUserPassword,
   UsersResponse,
@@ -97,6 +98,9 @@ export const fetchRequest = (imageId: string, onSuccess: (frr: Generate) => void
 
 export const fetchUsers = (onSuccess: (r: UsersResponse) => void, onError: (r: Response) => void) =>
   backendGetRequest("/api/admin/users", onSuccess, onError);
+
+export const fetchRequests = (onSuccess: (r: RequestsResponse) => void, onError: (r: Response) => void) =>
+  backendGetRequest("/api/admin/requests", onSuccess, onError);
 
 export const sendChangePasswordRequest = (
   req: ChangePassword,
