@@ -11,7 +11,7 @@ type Props = Readonly<{
 const RequestCard = ({ prompt, imageId }: Props) => (
   <Card sx={{ minWidth: 275, marginTop: "15px" }}>
     <CardHeader title={prompt} titleTypographyProps={{ variant: "h6" }} style={{ background: "#e0e0e0" }} />
-    <CardMedia component="img" height="194" image={gridImageUrl(imageId)} />
+    <CardMedia component="img" image={gridImageUrl(imageId)} />
   </Card>
 );
 

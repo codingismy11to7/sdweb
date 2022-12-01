@@ -4,13 +4,12 @@ import Backdrop from "@mui/material/Backdrop";
 import TextField from "@mui/material/TextField";
 import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLoaderData, useNavigate, useParams } from "react-router-dom";
 import { Key } from "ts-key-enum";
 import ReelToReel from "../components/spinner/ReelToReel";
-import { fetchRequest, gridImageUrl, imageSearch } from "../rpc/backend";
+import { gridImageUrl, imageSearch } from "../rpc/backend";
 import { Generate } from "../rpc/models";
-import { usePrevious } from "../util/hooks";
-import { isDefined } from "../util/undefOr";
+import { foreach, isDefined, UndefOr } from "../util/undefOr";
 
 const ImageViewer = lazy(() => import("../components/ImageViewer"));
 
@@ -28,19 +27,16 @@ const imageList = (imageId: string) =>
   );
 
 export const Search = () => {
+  const searchItem = useLoaderData() as UndefOr<Generate>;
   const params = useParams();
   const imageId = params.imageId;
+  const notFound = isDefined(imageId) && !isDefined(searchItem);
   const [generating, setGenerating] = useState(false);
-  const [fetchedRequest, setFetchedRequest] = useState<Generate>();
   const [searchText, setSearchText] = useState("");
-  const [notFound, setNotFound] = useState<boolean>();
   const navigate = useNavigate();
   const [t] = useTranslation();
 
-  const oldImageId = usePrevious(imageId);
-  useEffect(() => {
-    if (oldImageId !== imageId) setNotFound(undefined);
-  }, [imageId, oldImageId]);
+  useEffect(() => foreach(searchItem?.prompt, setSearchText), [searchItem?.prompt]);
 
   const doSearch = useCallback(
     (searchText: string) => {
@@ -49,28 +45,6 @@ export const Search = () => {
     },
     [navigate],
   );
-
-  useEffect(() => {
-    if (imageId) {
-      setFetchedRequest(undefined);
-      setNotFound(undefined);
-      fetchRequest(
-        imageId,
-        frr => {
-          console.log("found request");
-          setFetchedRequest(frr);
-          setSearchText(frr.prompt);
-          setNotFound(false);
-        },
-        resp => {
-          if (resp.status === 404) {
-            console.log("couldn't find this request");
-            setNotFound(true);
-          }
-        },
-      );
-    }
-  }, [imageId]);
 
   return (
     <>
@@ -104,9 +78,9 @@ export const Search = () => {
       ) : (
         <></>
       )}
-      {!!imageId && isDefined(notFound) && !notFound && !generating && isDefined(fetchedRequest) ? (
+      {!!imageId && !notFound && !generating && isDefined(searchItem) ? (
         <Suspense>
-          <ImageViewer images={imageList(imageId)} prompt={fetchedRequest.prompt} />
+          <ImageViewer images={imageList(imageId)} prompt={searchItem.prompt} />
         </Suspense>
       ) : (
         <></>

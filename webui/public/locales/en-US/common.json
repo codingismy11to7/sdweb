@@ -29,6 +29,7 @@
     "administration": "Administration",
     "administrator": "Administrator",
     "add": "Add",
+    "adduser": "$t(add) a User",
     "confirmdelete": "Are you sure you want to delete {{username}}?",
     "update": "Update",
     "delete": "Delete",

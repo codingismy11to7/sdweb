@@ -1,25 +1,10 @@
 import Container from "@mui/material/Container";
-import { useCallback, useEffect, useState } from "react";
+import { useLoaderData } from "react-router-dom";
 import RequestCard from "../components/RequestCard";
-import { fetchRequests } from "../rpc/backend";
 import { RequestsResponse } from "../rpc/models";
 
 const RequestsViewer = () => {
-  const [notFetched, setNotFetched] = useState(true);
-  const [requests, setRequests] = useState<RequestsResponse>();
-
-  const doRequestsFetch = useCallback(() => {
-    fetchRequests(
-      res => setRequests(res),
-      err => console.error(err),
-    ).then(() => setNotFetched(false));
-  }, []);
-
-  useEffect(() => {
-    if (notFetched) {
-      doRequestsFetch();
-    }
-  }, [doRequestsFetch, notFetched]);
+  const requests = useLoaderData() as RequestsResponse;
 
   return (
     <Container maxWidth={"sm"}>

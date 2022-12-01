@@ -9,10 +9,11 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { createBrowserRouter, Outlet, RouterProvider, useNavigate } from "react-router-dom";
+import { createBrowserRouter, Outlet, RouteObject, RouterProvider, useNavigate } from "react-router-dom";
 import { Loading } from "../components/Loading";
 import { NavigationSidebar } from "../components/NavigationSidebar";
 import { AppContext } from "../context";
+import { loadRequest, loadRequests, loadUsers } from "../rpc/backend";
 import { User } from "../rpc/models";
 import { useIsDesktop } from "../util/hooks";
 import { Api } from "./Api";
@@ -27,26 +28,29 @@ const Redirect = () => {
   useEffect(() => nav("/sd/search", { replace: true }), [nav]);
   return <></>;
 };
+
+const baseRoutes = (): RouteObject[] => [
+  { index: true, element: <Redirect /> },
+  { path: "search", element: <Search /> },
+  {
+    path: "search/:imageId",
+    element: <Search />,
+    loader: ({ params }) => loadRequest(params.imageId),
+  },
+  { path: "api", element: <Api /> },
+  { path: "password", element: <ChangePassword /> },
+];
+const adminRoutes = (): RouteObject[] => [
+  { path: "administration/*", element: <Administration />, loader: loadUsers },
+  { path: "requests", element: <RequestsViewer />, loader: loadRequests },
+];
 const createRouter = (admin: boolean) =>
   createBrowserRouter([
     { path: "/", element: <MainPage />, children: [{ index: true, element: <Redirect /> }] },
     {
       path: "/sd",
       element: <MainPage />,
-      children: [
-        { index: true, element: <Redirect /> },
-        { path: "search", element: <Search /> },
-        { path: "search/:imageId", element: <Search /> },
-        { path: "api", element: <Api /> },
-        { path: "password", element: <ChangePassword /> },
-      ].concat(
-        admin
-          ? [
-              { path: "administration/*", element: <Administration /> },
-              { path: "requests", element: <RequestsViewer /> },
-            ]
-          : [],
-      ),
+      children: baseRoutes().concat(admin ? adminRoutes() : []),
     },
   ]);
 
