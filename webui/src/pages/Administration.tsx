@@ -1,8 +1,9 @@
 import { Button, Container } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useLoaderData } from "react-router-dom";
 import UserForm from "../components/UserForm";
-import { fetchUsers } from "../rpc/backend";
 import { User, UsersResponse } from "../rpc/models";
 import { map } from "../util/undefOr";
 
@@ -12,23 +13,10 @@ const columns: Array<GridColDef<User, User>> = [
 ];
 
 const Administration = () => {
-  const [notFetched, setNotFetched] = useState(true);
-  const [users, setUsers] = useState<UsersResponse>();
+  const users = useLoaderData() as UsersResponse;
+  const [t] = useTranslation();
   const [modalOpen, setModalOpen] = useState(false);
   const [editingUsername, setEditingUsername] = useState<string>();
-
-  const doUserFetch = useCallback(() => {
-    fetchUsers(
-      res => setUsers(res),
-      err => console.error(err),
-    ).then(() => setNotFetched(false));
-  }, []);
-
-  useEffect(() => {
-    if (notFetched) {
-      doUserFetch();
-    }
-  }, [doUserFetch, notFetched]);
 
   const handleAddUser = () => {
     setEditingUsername(undefined);
@@ -38,8 +26,7 @@ const Administration = () => {
   const closeModal = useCallback(() => {
     setEditingUsername(undefined);
     setModalOpen(false);
-    doUserFetch();
-  }, [doUserFetch]);
+  }, []);
 
   const editingUser = useMemo(
     () => map(editingUsername, username => users?.find(u => u.username === username)),
@@ -49,7 +36,7 @@ const Administration = () => {
   return (
     <Container maxWidth="sm" style={{ height: 375, marginTop: "5px" }}>
       <Button size="small" onClick={handleAddUser} variant="contained">
-        Add a user
+        {t("admin.adduser")}
       </Button>
       <DataGrid<User>
         style={{ marginTop: "5px" }}

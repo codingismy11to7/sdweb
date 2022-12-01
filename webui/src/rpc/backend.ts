@@ -1,3 +1,4 @@
+import { fold } from "../util/undefOr";
 import {
   ChangePassword,
   ChangePasswordResponse,
@@ -93,14 +94,29 @@ const backendDeleteRequest = <T, R>(
 export const imageSearch = (prompt: string, onSuccess: (gr: GenerateResponse) => void) =>
   Promise.resolve("/api/generate").then(url => backendPostRequest(url, { prompt }, onSuccess));
 
+const badHandler = (reject: (reason?: any) => void) => (r: Response) => {
+  console.error("got an error", r);
+  reject(`failed request ${r.status}`);
+};
+
 export const fetchRequest = (imageId: string, onSuccess: (frr: Generate) => void, onError: (r: Response) => void) =>
   backendGetRequest(`/api/prompt/${imageId}`, onSuccess, onError);
+export const loadRequest = (imageId?: string) =>
+  new Promise((resolve, reject) =>
+    fold(
+      imageId,
+      () => resolve(undefined),
+      id => fetchRequest(id, resolve, badHandler(reject)),
+    ),
+  );
 
 export const fetchUsers = (onSuccess: (r: UsersResponse) => void, onError: (r: Response) => void) =>
   backendGetRequest("/api/admin/users", onSuccess, onError);
+export const loadUsers = () => new Promise((resolve, reject) => fetchUsers(resolve, badHandler(reject)));
 
 export const fetchRequests = (onSuccess: (r: RequestsResponse) => void, onError: (r: Response) => void) =>
   backendGetRequest("/api/admin/requests", onSuccess, onError);
+export const loadRequests = () => new Promise((resolve, reject) => fetchRequests(resolve, badHandler(reject)));
 
 export const sendChangePasswordRequest = (
   req: ChangePassword,
