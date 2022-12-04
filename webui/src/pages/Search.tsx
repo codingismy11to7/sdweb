@@ -4,11 +4,12 @@ import Backdrop from "@mui/material/Backdrop";
 import TextField from "@mui/material/TextField";
 import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useLoaderData, useNavigate, useParams } from "react-router-dom";
+import { useLoaderData, useParams } from "react-router-dom";
 import { Key } from "ts-key-enum";
 import ReelToReel from "../components/spinner/ReelToReel";
 import { gridImageUrl, imageSearch } from "../rpc/backend";
 import { Generate } from "../rpc/models";
+import { useNavigator } from "../util/navigation";
 import { foreach, isDefined, UndefOr } from "../util/undefOr";
 
 const ImageViewer = lazy(() => import("../components/ImageViewer"));
@@ -33,7 +34,7 @@ export const Search = () => {
   const notFound = isDefined(imageId) && !isDefined(searchItem);
   const [generating, setGenerating] = useState(false);
   const [searchText, setSearchText] = useState("");
-  const navigate = useNavigate();
+  const navigate = useNavigator();
   const [t] = useTranslation();
 
   useEffect(() => foreach(searchItem?.prompt, setSearchText), [searchItem?.prompt]);
@@ -41,7 +42,7 @@ export const Search = () => {
   const doSearch = useCallback(
     (searchText: string) => {
       setGenerating(true);
-      imageSearch(searchText, gr => navigate(`/sd/search/${gr.imageId}`)).finally(() => setGenerating(false));
+      imageSearch(searchText, gr => navigate.toImage(gr.imageId)).finally(() => setGenerating(false));
     },
     [navigate],
   );
