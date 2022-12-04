@@ -1,7 +1,7 @@
 package sdweb
 
 import com.typesafe.config.ConfigFactory
-import io.getquill.SnakeCase
+import io.getquill.{Ord, SnakeCase}
 import io.getquill.jdbczio.Quill
 import sdweb.model.User
 import zio._
@@ -46,7 +46,7 @@ object Persistence {
     import quill._
 
     // Requests
-    override val finishedRequests: IO[SQLException, List[Request]] = run(query[Request])
+    override val finishedRequests: IO[SQLException, List[Request]] = run(query[Request].sortBy(_.modTime)(Ord.desc))
 
     override def requestById(imageId: UUID): IO[SQLException, Option[Request]] =
       run(query[Request].filter(_.id == lift(imageId))).map(_.headOption)
@@ -112,6 +112,9 @@ object Persistence {
               | seed integer,
               | mod_time integer not null,
               | constraint requests_pkey primary key (id)
+              |)""".stripMargin)
+          stmt.executeUpdate("""create index if not exists modtime on request (
+              |  mod_time desc
               |)""".stripMargin)
           stmt.executeUpdate("""create table if not exists user (
               | username varchar not null,
