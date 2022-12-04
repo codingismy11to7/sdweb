@@ -9,13 +9,14 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { createBrowserRouter, Outlet, RouteObject, RouterProvider, useNavigate } from "react-router-dom";
+import { createBrowserRouter, Outlet, RouteObject, RouterProvider } from "react-router-dom";
 import { Loading } from "../components/Loading";
 import { NavigationSidebar } from "../components/NavigationSidebar";
 import { AppContext } from "../context";
 import { loadRequest, loadRequests, loadUsers } from "../rpc/backend";
 import { User } from "../rpc/models";
 import { useIsDesktop } from "../util/hooks";
+import { useNavigator } from "../util/navigation";
 import { Api } from "./Api";
 import ChangePassword from "./ChangePassword";
 import RequestsViewer from "./RequestsViewer";
@@ -24,8 +25,8 @@ import { Search } from "./Search";
 const Administration = lazy(() => import("./Administration"));
 
 const Redirect = () => {
-  const nav = useNavigate();
-  useEffect(() => nav("/sd/search", { replace: true }), [nav]);
+  const nav = useNavigator();
+  useEffect(() => nav.toSearch(true), [nav]);
   return <></>;
 };
 

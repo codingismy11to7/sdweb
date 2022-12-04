@@ -15,9 +15,9 @@ import ListItemText from "@mui/material/ListItemText";
 import Toolbar from "@mui/material/Toolbar";
 import { FC, ReactNode, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { NavigateOptions, To, useNavigate } from "react-router-dom";
 import { useIsAdminUser } from "../context";
 import { navigateToLogout } from "../rpc/backend";
+import { Navigator, useNavigator } from "../util/navigation";
 
 const drawerWidth = 240;
 
@@ -36,17 +36,17 @@ export const NavigationSidebar: FC<Props> = ({ drawerOpen, onClose }) => {
   const [t] = useTranslation();
   const isAdminUser = useIsAdminUser();
 
-  const nav = useNavigate();
+  const nav = useNavigator();
   const navigate = useCallback(
-    (to: To, opts?: NavigateOptions) => {
+    (f: (n: Navigator) => void) => {
       onClose();
-      nav(to, opts);
+      f(nav);
     },
     [nav, onClose],
   );
 
   const navItem = useCallback(
-    (label: string, navTo: string, icon: ReactNode) => menuItem(label, () => navigate(navTo), icon),
+    (label: string, navTo: (n: Navigator) => void, icon: ReactNode) => menuItem(label, () => navigate(navTo), icon),
     [navigate],
   );
 
@@ -63,14 +63,14 @@ export const NavigationSidebar: FC<Props> = ({ drawerOpen, onClose }) => {
       <Toolbar />
       <Box sx={{ overflow: "auto" }}>
         <List>
-          {navItem(t("common.search"), "/", <SearchIcon />)}
-          {navItem(t("common.api"), "api", <ApiIcon />)}
+          {navItem(t("common.search"), n => n.toSearch(), <SearchIcon />)}
+          {navItem(t("common.api"), n => n.toApiDocs(), <ApiIcon />)}
         </List>
         <Divider />
         <List>
-          {navItem(t("common.changepw"), "password", <KeyIcon />)}
-          {isAdminUser ? navItem(t("admin.administration"), "administration", <AdminPanelSettingsIcon />) : <></>}
-          {isAdminUser ? navItem(t("admin.requests"), "requests", <PreviewIcon />) : <></>}
+          {navItem(t("common.changepw"), n => n.toChangePw(), <KeyIcon />)}
+          {isAdminUser ? navItem(t("admin.administration"), n => n.toAdmin(), <AdminPanelSettingsIcon />) : <></>}
+          {isAdminUser ? navItem(t("admin.requests"), n => n.toRequests(), <PreviewIcon />) : <></>}
         </List>
         <Divider />
         <List>{menuItem(t("common.logout"), navigateToLogout, <LogoutIcon />)}</List>
